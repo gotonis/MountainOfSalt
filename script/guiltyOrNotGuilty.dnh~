@@ -1,0 +1,107 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Guilty or Not Guilty"]
+#Text["Edited from Tutorial Code by Sparen"]
+//#BGM["./necrofantasia.ogg"]
+//#include "script/default_system/Default_ShotConst.txt"
+#include "resource/Shot/ZUNShot_Const.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let angleAdj = 90;
+
+@Event{
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(500);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX, 100, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+}
+@MainLoop{
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+    //if(count == 0){movement;}
+    if(count%20==0){fire;}
+    if(count%180==0){laser;}
+    // fire;
+    count++;
+    yield;
+}
+task fire{
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}//Default kill to prevent (0,0) spawning
+    let angleT = GetAngleToPlayer(objBoss);
+    ascent(i in 0..6){
+      let dTheta = angleAdj + 20*i;
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT + dTheta, BUBBLE_BLUE, 20);
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT - dTheta, BUBBLE_RED, 20);
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT + dTheta + 180, BUBBLE_BLUE, 20);
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT - dTheta + 180, BUBBLE_RED, 20);
+    }
+    angleAdj += 8;
+}
+
+task laser{
+  loop(60){
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}
+    yield;
+  }
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}
+  let angleL = GetAngleToPlayer(objBoss);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL, 600, 160, 60, ST_LASER_PURPLE, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL+66, 400, 25, 60, ST_LASER_RED, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL-66, 400, 25, 60, ST_LASER_BLUE, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL+89, 400, 25, 60, ST_LASER_RED, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL-89, 400, 25, 60, ST_LASER_BLUE, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL+112, 400, 25, 60,ST_LASER_RED, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL-112, 400, 25, 60,ST_LASER_BLUE, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL+135, 400, 25, 60,ST_LASER_RED, 60);
+  CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL-135, 400, 25, 60,ST_LASER_BLUE, 60);
+}
+
+task movement{
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+        ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX+90,GetCenterX-90), rand(GetCenterY-60,GetCenterY-120), 60);
+        wait(240);
+    }
+}
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

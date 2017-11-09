@@ -1,0 +1,196 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Reflect Spark"]
+#Text["asdf"]
+//#BGM["./necrofantasia.ogg"]
+//#include "script/default_system/Default_ShotConst.txt"
+#include "resource/Shot/ZUNShot_Const.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let bx;
+let by;
+let ll = 80;
+let lw = 20;
+let doll1;
+let doll2;
+let mirror;
+let mangle;
+let ml;
+let ddx;
+let ddy;
+
+@Event {
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(50000);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+
+
+
+@Initialize {
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    doll1 = ObjEnemy_Create(OBJ_ENEMY);
+    ObjEnemy_Regist(doll1);
+    ObjEnemy_SetDamageRate(doll1,0,0);
+    doll2 = ObjEnemy_Create(OBJ_ENEMY);
+    ObjEnemy_Regist(doll2);
+    ObjEnemy_SetDamageRate(doll2,0,0);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 100, 60);
+    ObjMove_SetDestAtFrame(doll1, GetCenterX()-100, 300, 60);
+    ObjMove_SetDestAtFrame(doll2, GetCenterX()+100, 300, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+    ddx = ObjMove_GetX(doll2) - ObjMove_GetX(doll1);
+    ddy = ObjMove_GetY(doll2) - ObjMove_GetY(doll1);
+    mangle = atan2(ddy,ddx);
+    ml = power(ddx*ddx+ddy*ddy,0.5);
+    mirror = CreateStraightLaserA1(ObjMove_GetX(doll1),ObjMove_GetY(doll1),mangle, ml, 10, 6000,ST_LASER_GRAY,0);
+    ObjShot_SetSpellResist(mirror,true);
+    //wait(60);
+    fireRainbowSpark;
+}
+
+
+@MainLoop {
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+    bx = ObjMove_GetX(objBoss);
+    by = ObjMove_GetY(objBoss);
+    /*if(count >= 0 && count%240 == 90){
+      fireRainbowSpark;
+      }*/
+    if(count >= 0 && count%240==0){
+      ObjMove_SetDestAtFrame(doll1, ObjMove_GetX(doll1)+rand(-50,50),ObjMove_GetY(doll1)+rand(-50,50),60); ObjMove_SetDestAtFrame(doll2, ObjMove_GetX(doll2)+rand(-50,50),ObjMove_GetY(doll2)+rand(-50,50),60);
+    }
+    ddx = ObjMove_GetX(doll2) - ObjMove_GetX(doll1);
+    ddy = ObjMove_GetY(doll2) - ObjMove_GetY(doll1);
+    mangle = atan2(ddy,ddx);
+    ml = power(ddx*ddx+ddy*ddy,0.5);
+    ObjMove_SetPosition(mirror, ObjMove_GetX(doll1),ObjMove_GetY(doll1));
+    ObjStLaser_SetAngle(mirror,mangle);
+    ObjLaser_SetLength(mirror,ml);
+    
+    
+    
+    count++;
+
+    
+    yield;
+}
+
+
+task fireRainbowSpark{
+  wait(90);
+  let fireAngle = GetAngleToPlayer(objBoss);
+  wait(10);
+  let laserAry = [];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle,ll,lw,C_LASER_GRAY,5)];
+  
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+3,ll,lw,C_LASER_PURPLE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+6,ll,lw,C_LASER_BLUE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+9,ll,lw,C_LASER_AQUA,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+12,ll,lw,C_LASER_GREEN,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+15,ll,lw,C_LASER_YELLOW,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+18,ll,lw,C_LASER_ORANGE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle+21,ll,lw,C_LASER_RED,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-3,ll,lw,C_LASER_PURPLE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-6,ll,lw,C_LASER_BLUE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-9,ll,lw,C_LASER_AQUA,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-12,ll,lw,C_LASER_GREEN,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-15,ll,lw,C_LASER_YELLOW,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-18,ll,lw,C_LASER_ORANGE,5)];
+  laserAry = laserAry ~ [CreateCurveLaserA1(bx,by,4,fireAngle-21,ll,lw,C_LASER_RED,5)];
+
+  ascent(i in 0..length(laserAry)){
+    ObjCrLaser_SetTipDecrement(laserAry[i],0);
+    ObjShot_SetSpellResist(laserAry[i],true);
+  }
+
+  while(length(laserAry) > 0){
+  ascent(i in 0..length(laserAry)){
+    let tx = ObjMove_GetX(doll1);
+    let ty = ObjMove_GetY(doll1);
+    let sx = ObjMove_GetX(doll2);
+    let sy = ObjMove_GetY(doll2);
+    ddx = sx-tx;
+    ddy = sy-ty;
+    if(!(Obj_IsDeleted(laserAry[i]))){
+      /*if(IsIntersected_Obj_Obj(laserAry[i],mirror)){
+	ObjMove_SetAngle(laserAry[i],2*mangle - ObjMove_GetAngle(laserAry[i]));
+	}*/
+      let lx = ObjMove_GetX(laserAry[i]);
+      let ly = ObjMove_GetY(laserAry[i]);
+      let yOffset = ly-ty;
+      let xOffset = lx-tx;
+      //CreateStraightLaserA1(tx,ty,atan2(yOffset,xOffset),power(yOffset*yOffset+xOffset*xOffset,0.5),10,5,C_LASER_RED,0);
+      if((-10 < (yOffset - (ddy/ddx)*xOffset)) && (10 > (yOffset - (ddy/ddx)*xOffset))&& ((lx > tx && lx < sx) || (lx < tx && lx > sx))){
+	ObjMove_SetAngle(laserAry[i],2*mangle - ObjMove_GetAngle(laserAry[i]));
+	//CreateShotA1(tx,ty,0,0,STAR_PURPLE,0);
+      }
+      if((lx > -2 && lx < 2) || (lx > GetStgFrameWidth() - 2 && lx < GetStgFrameWidth + 2)){
+	
+	ObjMove_SetAngle(laserAry[i],180-ObjMove_GetAngle(laserAry[i]));
+      }
+      if((ly > -2 && ly < 2) || (ly > GetStgFrameHeight() - 2 && ly < GetStgFrameHeight + 2)){
+	ObjMove_SetAngle(laserAry[i], -ObjMove_GetAngle(laserAry[i]));
+      }
+    }
+  }
+  yield;
+  }
+}
+
+
+  
+task movement {
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+      // ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX()+90,GetCenterX()-90), rand(GetCenterY()-60,GetCenterY()-120), 60);
+        wait(240);
+    }
+} 
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+    let imgDoll = GetCurrentScriptDirectory() ~ "Shanghai.png";
+    ObjPrim_SetTexture(doll1, imgDoll);
+    ObjPrim_SetTexture(doll2, imgDoll);
+    ObjSprite2D_SetSourceRect(doll1,1,1,43,52);
+    ObjSprite2D_SetSourceRect(doll2,1,1,43,52);
+    ObjRender_SetScaleX(doll2,-1);
+    ObjSprite2D_SetDestCenter(doll1);
+    ObjSprite2D_SetDestCenter(doll2);
+    
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

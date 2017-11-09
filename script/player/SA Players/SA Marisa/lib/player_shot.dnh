@@ -1,0 +1,89 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Marisa
+	by Frenticpony
+	
+	player_shot.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+#PlayerShotData
+shot_image = "./../img/pl00_shot.png"
+
+//Default Shot
+ShotData
+{
+	id = 1
+	rect = (0, 96, 16, 128)
+	render = ALPHA
+	alpha = 150
+	collision = 4
+}
+
+//Marisa A Rainbow Shot
+ShotData
+{
+	id = 2
+	rect = (81, 0, 89, 32)
+	render = ALPHA
+	alpha = 250
+}
+
+//Marisa B Red Shot
+ShotData
+{
+	id = 3
+	rect = (32, 96, 48, 128)
+	render = ALPHA
+	alpha = 150
+	collision = 4
+}
+
+//Marisa B Blue Shot
+ShotData
+{
+	id = 4
+	rect = (16, 96, 32, 128)
+	render = ALPHA
+	alpha = 150
+	collision = 4
+}
+
+//Marisa B Yellow Shot
+ShotData
+{
+	id = 5
+	rect = (48, 96, 64, 128)
+	render = ALPHA
+	alpha = 150
+	collision = 4
+}
+
+//Marisa B Orange Shot
+ShotData
+{
+	id = 6
+	rect = (64, 96, 80, 128)
+	render = ALPHA
+	alpha = 150
+	collision = 4
+}
+
+//Marisa C Missile On
+ShotData
+{
+	id = 7
+	rect = (81, 96, 95, 128)
+	render = ALPHA
+	alpha = 255
+	collision = 2
+}
+
+//Marisa C Missile Off
+ShotData
+{
+	id = 8
+	rect = (81, 64, 95, 96)
+	render = ALPHA
+	alpha = 255
+	collision = 2
+}
+

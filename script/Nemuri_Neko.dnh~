@@ -1,0 +1,82 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Mockery ~ \"Red UFO Invasion of Rage\""]
+#Text["Like the Nue card"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+
+@Event{
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(2000);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX, 192, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+}
+
+@MainLoop{
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+    yield;
+}
+
+
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+
+function makeOverlayCircle(xpos,ypos,zpos,radius, R,G,B,T) {
+  oc = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+  ObjPrim_SetPrimitiveType(oc, PRIMITIVE_TRIANGLEFAN);
+  let nv = 101;
+  ObjPrim_SetVertexCount(oc,nv);
+  ObjPrim_SetVertexPosition(oc,0,xpos,ypos,zpos);
+  ObjPrim_SetVertexColor(oc,0,R,G,B);
+  Objprim_SetVertexAlpha(oc,0,T);
+  ascent(i in 1..nv){
+    ObjPrim_SetVertexPosition(oc,i,xpos+radius*cos(i*360/(nv-1)),ypos+radius*sin(i*360/(nv-1)),zpos);
+    ObjPrim_SetVertexColor(oc,i,R,G,B);
+    Objprim_SetVertexAlpha(oc,i,T);
+  }
+  
+  
+  
+
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

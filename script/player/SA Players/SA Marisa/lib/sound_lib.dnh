@@ -1,0 +1,43 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Marisa
+	by Frenticpony
+	
+	sound_lib.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+let se_shot = GetCurrentScriptDirectory() ~ "../se/se_plst00.wav";
+let se_msl = GetCurrentScriptDirectory() ~ "../se/se_msl.wav";
+let se_spark = GetCurrentScriptDirectory() ~ "../se/se_nep00.wav";
+let se_pldead = GetCurrentScriptDirectory() ~ "../se/se_pldead00.wav";
+
+let se_bonus = GetCurrentScriptDirectory() ~ "../se/se_bonus.wav";
+let se_graze = GetCurrentScriptDirectory() ~ "../se/se_graze.wav";
+
+let se_slash = GetCurrentScriptDirectory() ~ "../se/se_slash.wav";
+let se_powerup0 = GetCurrentScriptDirectory() ~ "../se/se_powerup0.wav";
+
+let se_item00 = GetCurrentScriptDirectory() ~ "../se/se_item00.wav";
+let se_powerup1 = GetCurrentScriptDirectory() ~ "../se/se_powerup1.wav";
+let se_extend = GetCurrentScriptDirectory() ~ "../se/se_extend.wav";
+let se_cardget = GetCurrentScriptDirectory() ~ "../se/se_cardget.wav";
+
+let se_warp_l = GetCurrentScriptDirectory() ~ "../se/se_warp_l.wav";
+let se_warp_r = GetCurrentScriptDirectory() ~ "../se/se_warp_r.wav";
+
+function LoadPlayerSounds()
+{
+	LoadSound(se_shot);
+	LoadSound(se_msl);
+	LoadSound(se_spark);
+	LoadSound(se_pldead);
+	LoadSound(se_bonus);
+	LoadSound(se_graze);
+	LoadSound(se_slash);
+	LoadSound(se_powerup0);
+	LoadSound(se_item00);
+	LoadSound(se_powerup1);
+	LoadSound(se_extend);
+	LoadSound(se_cardget);
+	LoadSound(se_warp_l);
+	LoadSound(se_warp_r);
+}

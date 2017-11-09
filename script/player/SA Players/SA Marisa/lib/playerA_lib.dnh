@@ -1,0 +1,1340 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Marisa
+	by Frenticpony
+
+	playerA_lib.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+let optionX1 = 128;
+let optionY1 = 144;
+let optionX2 = 144;
+let optionY2 = 160;
+
+let opPos_none   = [ 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+
+let opPos_levelOne   = [ 
+	[0, 32, 0, 32, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelTwo   = [ 
+	[-7, 32, 7, 32, 3], 
+	[7, 32, -7, 32, -3], 
+	[0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelThree = [ 
+	[-13, 29, 13, 29, 6], 
+	[0, 32, 0, 32, 0], 
+	[13, 29, -13, 29, -6],
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelFour  = [ 
+	[-20, 26, 20, 26, 9], 
+	[-7, 32, 7, 32, 3], 
+	[7, 32, -7, 32, -3],
+	[20, 26, -20, 26, -9], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelFive   = [ 
+	[-25, 21, 25, 21, 11], 
+	[-13, 29, 13, 29, 6], 
+	[0, 32, 0, 32, 0], 
+	[13, 29, -13, 29, -6], 
+	[25, 21, -25, 21, -11], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelSix   = [ 
+	[-29, 16, 29, 15, 22], 
+	[-20, 26, 20, 26, 9],  
+	[-7, 32, 7, 32, 3], 
+	[7, 32, -7, 32, -3], 
+	[20, 26, -20, 26, -9], 
+	[29, 16, -29, 15, -22], 
+	[0, 0, 0, 0, 0], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelSeven = [ 
+	[-31, 8, 31, 8, 26], 
+	[-25, 21, 25, 21, 11], 
+	[-13, 29, 13, 29, 6], 
+	[0, 32, 0, 32, 0], 
+	[13, 29, -13, 29, -6], 
+	[25, 21, -25, 21, -11], 
+	[31, 8, -31, 8, -26], 
+	[0, 0, 0, 0, 0] ];
+	
+let opPos_levelEight  = [ 
+	[-32, 2, 32, 2, 0], 
+	[-29, 16, 29, 15, 22], 
+	[-20, 26, 20, 26, 9],
+	[-7, 32, 7, 32, 3], 
+	[7, 32, -7, 32, -3], 
+	[20, 26, -20, 26, -9], 
+	[29, 16, -29, 15, -22], 
+	[32, 2, -32, 2, 0] ];
+
+let player_maxPower = 800;
+
+/* ---------------------------------------
+
+--------------------------------------- */
+
+let opPos_current = opPos_none;
+let opPos_Array = [opPos_none, opPos_levelOne, opPos_levelTwo, opPos_levelThree, opPos_levelFour, opPos_levelFive, opPos_levelSix, opPos_levelSeven, opPos_levelEight];
+
+let optionOne = 0;
+let optionTwo = 0;
+let optionThree = 0;
+let optionFour = 0;
+let optionFive = 0;
+let optionSix = 0;
+let optionSeven = 0;
+let optionEight = 0;
+
+let optionArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+function ExclFire()
+{
+	ShotSE(3);
+	alternative(GetVirtualKeyState(VK_SLOWMOVE))
+	case(KEY_FREE, KEY_PULL)
+	{
+		alternative(powerState)
+		case(0)
+		{
+			MainFire(0, 3, 16, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 16, 10, 16, 24, 270, 1);
+		}
+		case(1)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [12, 12], 0, 8, 12, 270, 1, 0);
+		}
+		case(2)
+		{
+			MainFire(0, 3, 11, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 11, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 273, 1, 0);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 267, 1, 0);
+		}
+		case(3)
+		{
+			MainFire(0, 3, 10, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 10, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 276, 1, 3);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 270, 1, 0);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 264, 1, 3);
+		}
+		case(4)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 279, 1, 3);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 273, 1, 0);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 267, 1, 0);
+			OptionFire(4, 16, [10, 9], 0, 8, 12, 261, 1, 3);
+		}
+		case(5)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 281, 1, 6);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 276, 1, 3);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 270, 1, 0);
+			OptionFire(4, 16, [10, 9], 0, 8, 12, 264, 1, 3);
+			OptionFire(5, 16, [10, 9], 0, 8, 12, 259, 1, 6);
+		}
+		case(6)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 292, 1, 6);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 279, 1, 3);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 273, 1, 0);
+			OptionFire(4, 16, [10, 9], 0, 8, 12, 267, 1, 0);
+			OptionFire(5, 16, [10, 9], 0, 8, 12, 261, 1, 3);
+			OptionFire(6, 16, [10, 9], 0, 8, 12, 248, 1, 6);
+		}
+		case(7)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 296, 1, 9);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 281, 1, 6);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 276, 1, 3);
+			OptionFire(4, 16, [10, 9], 0, 8, 12, 270, 1, 0);
+			OptionFire(5, 16, [10, 9], 0, 8, 12, 264, 1, 3);
+			OptionFire(6, 16, [10, 9], 0, 8, 12, 259, 1, 6);
+			OptionFire(7, 16, [10, 9], 0, 8, 12, 244, 1, 9);
+		}
+		case(8)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 270, 1, 9);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 292, 1, 6);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 279, 1, 3);
+			OptionFire(4, 16, [10, 9], 0, 8, 12, 273, 1, 0);
+			OptionFire(5, 16, [10, 9], 0, 8, 12, 267, 1, 0);
+			OptionFire(6, 16, [10, 9], 0, 8, 12, 261, 1, 3);
+			OptionFire(7, 16, [10, 9], 0, 8, 12, 248, 1, 6);
+			OptionFire(8, 16, [10, 9], 0, 8, 12, 270, 1, 9);
+		}
+	}
+	case(KEY_HOLD, KEY_PUSH)
+	{
+		alternative(powerState)
+		case(0)
+		{
+			MainFire(0, 3, 16, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 16, 10, 16, 24, 270, 1);
+		}
+		case(1)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [12, 12], 0, 8, 12, 270, 1, 0);
+		}
+		case(2)
+		{
+			MainFire(0, 3, 11, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 11, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 273, 1, 0);
+			OptionFire(2, 16, [10, 9], 0, 8, 12, 267, 1, 0);
+		}
+		case(3)
+		{
+			MainFire(0, 3, 10, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 10, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 9], 0, 8, 12, 276, 1, 3);
+			OptionFire(2, 16, [12, 9], 0, 8, 12, 270, 1, 0);
+			OptionFire(3, 16, [10, 9], 0, 8, 12, 264, 1, 3);
+		}
+		case(4)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 10], 0, 8, 12, 279, 1, 3);
+			OptionFire(2, 16, [10, 10], 0, 8, 12, 273, 1, 0);
+			OptionFire(3, 16, [10, 10], 0, 8, 12, 267, 1, 0);
+			OptionFire(4, 16, [10, 10], 0, 8, 12, 261, 1, 3);
+		}
+		case(5)
+		{
+			MainFire(0, 3, 8, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 8, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 10], 0, 8, 12, 281, 1, 6);
+			OptionFire(2, 16, [10, 10], 0, 8, 12, 276, 1, 3);
+			OptionFire(3, 16, [10, 10], 0, 8, 12, 270, 1, 0);
+			OptionFire(4, 16, [10, 10], 0, 8, 12, 264, 1, 3);
+			OptionFire(5, 16, [10, 10], 0, 8, 12, 259, 1, 6);
+		}
+		case(6)
+		{
+			MainFire(0, 3, 8, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 8, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 10], 0, 8, 12, 292, 1, 6);
+			OptionFire(2, 16, [10, 10], 0, 8, 12, 279, 1, 3);
+			OptionFire(3, 16, [10, 10], 0, 8, 12, 273, 1, 0);
+			OptionFire(4, 16, [10, 10], 0, 8, 12, 267, 1, 0);
+			OptionFire(5, 16, [10, 10], 0, 8, 12, 261, 1, 3);
+			OptionFire(6, 16, [10, 10], 0, 8, 12, 248, 1, 6);
+		}
+		case(7)
+		{
+			MainFire(0, 3, 8, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 8, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 10], 0, 8, 12, 296, 1, 9);
+			OptionFire(2, 16, [10, 10], 0, 8, 12, 281, 1, 6);
+			OptionFire(3, 16, [10, 10], 0, 8, 12, 276, 1, 3);
+			OptionFire(4, 16, [10, 10], 0, 8, 12, 270, 1, 0);
+			OptionFire(5, 16, [10, 10], 0, 8, 12, 264, 1, 3);
+			OptionFire(6, 16, [10, 10], 0, 8, 12, 259, 1, 6);
+			OptionFire(7, 16, [10, 10], 0, 8, 12, 244, 1, 9);
+		}
+		case(8)
+		{
+			MainFire(0, 3, 8, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 8, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 16, [10, 10], 0, 8, 12, 270, 1, 9);
+			OptionFire(2, 16, [10, 10], 0, 8, 12, 292, 1, 6);
+			OptionFire(3, 16, [10, 10], 0, 8, 12, 279, 1, 3);
+			OptionFire(4, 16, [10, 10], 0, 8, 12, 273, 1, 0);
+			OptionFire(5, 16, [10, 10], 0, 8, 12, 267, 1, 0);
+			OptionFire(6, 16, [10, 10], 0, 8, 12, 261, 1, 3);
+			OptionFire(7, 16, [10, 10], 0, 8, 12, 248, 1, 6);
+			OptionFire(8, 16, [10, 10], 0, 8, 12, 270, 1, 9);
+		}
+	}
+}
+
+function InitExclPlayer()
+{
+	
+}
+
+function ResetExclPlayer()
+{
+	
+}
+
+function MainLoopExcl()
+{
+	UpdateOptionMovePosition(optionOne, 0);
+	UpdateOptionMovePosition(optionTwo, 1);
+	UpdateOptionMovePosition(optionThree, 2);
+	UpdateOptionMovePosition(optionFour, 3);
+	UpdateOptionMovePosition(optionFive, 4);
+	UpdateOptionMovePosition(optionSix, 5);
+	UpdateOptionMovePosition(optionSeven, 6);
+	UpdateOptionMovePosition(optionEight, 7);
+	
+	ExclFire();
+}
+
+
+function OptionFire(op_obj, rate, damage, offsetX, offsetY, speed, angle, pene, delay)
+{
+	let loc_op = optionArray[op_obj];
+	if(canPlayerFire == true && !isPlayerDead)
+	{
+		if(CheckModulo(globalFireTimer, rate) == true)
+		{
+			RainbowFourShot();
+		}
+	}
+	
+	task RainbowFourShot() //Lazy
+	{
+		let loc_val = 0;
+		loop(delay){yield;}
+		loop(4)
+		{
+			if(loc_val == 0)
+			{
+				CreateRainbowPlayerShot(ObjRender_GetX(loc_op) + offsetX, ObjRender_GetY(loc_op) + offsetY, speed, angle, damage[0] * player_DamageMultiplier, pene);
+			}
+			else
+			{
+				CreateRainbowPlayerShot(ObjRender_GetX(loc_op) + offsetX, ObjRender_GetY(loc_op) + offsetY, speed, angle, damage[1] * player_DamageMultiplier, pene);
+			}
+			loc_val++;
+			yield;
+			yield;
+		}
+	}
+}
+
+function InitOptions()
+{
+	optionOne = CreateOptionObject();
+	optionTwo = CreateOptionObject();
+	optionThree = CreateOptionObject();
+	optionFour = CreateOptionObject();
+	optionFive = CreateOptionObject();
+	optionSix = CreateOptionObject();
+	optionSeven = CreateOptionObject();
+	optionEight = CreateOptionObject();
+	
+	OptionDrawLoop(optionOne, 0);
+	OptionDrawLoop(optionTwo, 1);
+	OptionDrawLoop(optionThree, 2);
+	OptionDrawLoop(optionFour, 3);
+	OptionDrawLoop(optionFive, 4);
+	OptionDrawLoop(optionSix, 5);
+	OptionDrawLoop(optionSeven, 6);
+	OptionDrawLoop(optionEight, 7);
+}
+
+function FinishOptions()
+{
+	ascent(i in 0..length(optionArray))
+	{
+		if(optionArray[i] != 0)
+		{
+			OptionDeathEffect(optionArray[i]);
+			OptionFinishFlags(optionArray[i]);
+		}
+	}
+}
+
+function CreateOptionObject()
+{
+	let op_obj = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjRender_SetPosition(op_obj, GetPlayerX, GetPlayerY, 0);
+	Obj_SetValue(op_obj, "ACTIVE", 0);
+	Obj_SetValue(op_obj, "ANIM", 0);
+	return op_obj;
+}
+
+
+function UpdateOptionMovePosition(op_obj, loc_pos)
+{
+	let distancetopoint = Obj_GetValueD(op_obj, "dis2p", 0);
+	let directiontopoint = Obj_GetValueD(op_obj, "dir2p", 0);
+
+	let destinationx = Obj_GetValueD(op_obj, "dx", 0);
+	let destinationy = Obj_GetValueD(op_obj, "dy", 0);
+
+	alternative(Obj_GetValueD(op_obj, "ACTIVE", 0))
+	case(-1)
+	{
+		if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+		{
+			destinationx = GetPlayerX + opPos_current[loc_pos][2];
+			destinationy = GetPlayerY + opPos_current[loc_pos][3];
+		}
+		else
+		{
+			destinationx = GetPlayerX + opPos_current[loc_pos][0];
+			destinationy = GetPlayerY + opPos_current[loc_pos][1];
+		}
+		ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+		Obj_SetValue(op_obj, "ACTIVE", 1);
+	}
+	case(0)
+	{
+		
+	}
+	case(1)
+	{
+		distancetopoint = ((destinationx - ObjRender_GetX(op_obj))^2 + (destinationy - ObjRender_GetY(op_obj))^2)^0.5;
+		directiontopoint = atan2(destinationy - ObjRender_GetY(op_obj),destinationx - ObjRender_GetX(op_obj));
+		if(distancetopoint >= 1)
+		{
+			ObjRender_SetPosition(op_obj, ObjRender_GetX(op_obj) + cos(directiontopoint) * distancetopoint * 0.4, ObjRender_GetY(op_obj) + sin(directiontopoint) * distancetopoint * 0.4, 1);
+		}
+		else
+		{
+			ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+		}
+
+		if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+		{
+			destinationx = GetPlayerX + opPos_current[loc_pos][2];
+			destinationy = GetPlayerY + opPos_current[loc_pos][3];
+		}
+		else
+		{
+			destinationx = GetPlayerX + opPos_current[loc_pos][0];
+			destinationy = GetPlayerY + opPos_current[loc_pos][1];
+		}
+	}
+	
+	Obj_SetValue(op_obj, "dis2p", distancetopoint);
+	Obj_SetValue(op_obj, "dir2p", directiontopoint);
+	Obj_SetValue(op_obj, "dx", destinationx);
+	Obj_SetValue(op_obj, "dy", destinationy);
+}
+
+task OptionMoveLoop(op_obj, loc_pos)
+{
+	let distancetopoint = 0;
+	let directiontopoint = 0;
+	let orbit = 0;
+	let count = 0;
+	let dir1 = 270;
+	let dir2 = 270;
+	let warpOffset = 0;
+
+	let destinationx = GetPlayerX;
+	let destinationy = GetPlayerY;
+	
+	while(!Obj_IsDeleted(op_obj))
+	{
+		alternative(Obj_GetValueD(op_obj, "ACTIVE", 0))
+		case(-1)
+		{
+			if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+			{
+				destinationx = GetPlayerX + opPos_current[loc_pos][2];
+				destinationy = GetPlayerY + opPos_current[loc_pos][3];
+			}
+			else
+			{
+				destinationx = GetPlayerX + opPos_current[loc_pos][0];
+				destinationy = GetPlayerY + opPos_current[loc_pos][1];
+			}
+			ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+			Obj_SetValue(op_obj, "ACTIVE", 1);
+		}
+		case(0)
+		{
+			
+		}
+		case(1)
+		{
+			distancetopoint = ((destinationx - ObjRender_GetX(op_obj))^2 + (destinationy - ObjRender_GetY(op_obj))^2)^0.5;
+			directiontopoint = atan2(destinationy - ObjRender_GetY(op_obj),destinationx - ObjRender_GetX(op_obj));
+			if(distancetopoint >= 1)
+			{
+				ObjRender_SetPosition(op_obj, ObjRender_GetX(op_obj) + cos(directiontopoint) * distancetopoint * 0.4, ObjRender_GetY(op_obj) + sin(directiontopoint) * distancetopoint * 0.4, 1);
+			}
+			else
+			{
+				ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+			}
+			
+			if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+			{
+				destinationx = GetPlayerX + opPos_current[loc_pos][2];
+				destinationy = GetPlayerY + opPos_current[loc_pos][3];
+			}
+			else
+			{
+				destinationx = GetPlayerX + opPos_current[loc_pos][0];
+				destinationy = GetPlayerY + opPos_current[loc_pos][1];
+			}
+		}
+		yield;
+	}
+}
+
+task OptionDrawLoop(op_obj, loc_pos)
+{
+	let orbit = 0;
+	let orbitB = 0;
+	let count = 0;
+	let animFrame = 0;
+	let animState = 0;
+	let animScale = 0.25;
+	let animScaleMod = 0.32;
+	
+	let optionDraw = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optionDraw, img_pl00);
+	ObjSprite2D_SetSourceRect(optionDraw, optionX1, optionY1, optionX2, optionY2);
+	ObjSprite2D_SetDestRect(optionDraw, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optionDraw, BLEND_ALPHA);
+	Obj_SetRenderPriorityI(optionDraw, 25);
+	
+	let optioneffect = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optioneffect, img_pl00);
+	ObjSprite2D_SetSourceRect(optioneffect, 64, 160, 80, 176);
+	ObjSprite2D_SetDestRect(optioneffect, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optioneffect, BLEND_ADD_ARGB);
+	Obj_SetRenderPriorityI(optioneffect, 24);
+	
+	while(!Obj_IsDeleted(op_obj))
+	{
+		if(playerPower != player_maxPower)
+		{
+			ObjRender_SetAlpha(optioneffect, 0);
+		}
+		else
+		{
+			ObjRender_SetAlpha(optioneffect, 150);
+		}
+		
+		if(Obj_GetValueD(op_obj, "RESET", false) == true)
+		{
+			animState = 0;
+			animFrame = 0;
+			animScale = 0.25;
+			animScaleMod = 0.2;
+			orbitB = 0;
+			Obj_SetValue(op_obj, "RESET", false);
+		}
+		
+		alternative(Obj_GetValueD(op_obj, "ACTIVE", 0))
+		case(-1, 0)
+		{
+			ObjRender_SetAlpha(optionDraw, 0);
+			ObjRender_SetAlpha(optioneffect, 0);
+		}
+		case(1)
+		{
+			if(animState == 0)
+			{
+				if(animFrame == 14)
+				{
+					animState = 1;
+				}
+				count = 35;
+				animScale += animScaleMod;
+				animScaleMod -= 0.021;
+				orbitB += 13;
+				ObjRender_SetScaleXYZ(optionDraw, animScale, animScale, 1);
+				ObjRender_SetBlendType(optionDraw, BLEND_ADD_ARGB);
+				animFrame++;
+			}
+			else
+			{
+				animScale = 1;
+				ObjRender_SetScaleXYZ(optionDraw, 1, 1, 1);
+				ObjRender_SetBlendType(optionDraw, BLEND_ALPHA);
+				count++;
+			}
+			ObjRender_SetAlpha(optionDraw, 255);
+		}
+		
+		ObjRender_SetAngleZ(optionDraw, opPos_current[loc_pos][4] + (12*cos(count*8)));
+		ObjRender_SetAngleZ(optioneffect, -count * 5.2);
+		
+		ObjRender_SetScaleXYZ(optioneffect, 1.5, 1.5, 1);
+		
+		ObjRender_SetPosition(optionDraw, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+		ObjRender_SetPosition(optioneffect, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+		//count++;
+		yield;
+	}
+	let scale = 1;
+	while(scale > 0)
+	{
+		scale -= 0.25;
+		ObjRender_SetScaleY(optionDraw, scale/2);
+		ObjRender_SetScaleX(optioneffect, scale);
+		yield;
+	}
+	Obj_Delete(optionDraw);
+	Obj_Delete(optioneffect);
+}
+
+task OptionDeathEffect(op_obj)
+{
+	let eff_scaleX = 1;
+	let eff_scaleY = 1;
+	let eff_angle = 0;
+	let eff_angMod = rand(-4, 4);
+	let optionEffect = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optionEffect, img_pl00);
+	ObjSprite2D_SetSourceRect(optionEffect, optionX1, optionY1, optionX2, optionY2);
+	ObjSprite2D_SetDestRect(optionEffect, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optionEffect, BLEND_ADD_ARGB);
+	Obj_SetRenderPriorityI(optionEffect, 25);
+	ObjRender_SetPosition(optionEffect, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+	
+	while(eff_scaleX > 0)
+	{
+		eff_scaleX -= 0.1;
+		eff_scaleY += 0.1;
+		eff_angle += eff_angMod;
+		ObjRender_SetScaleXYZ(optionEffect, eff_scaleX, eff_scaleY, 1);
+		ObjRender_SetAngleZ(optionEffect, eff_angle);
+		yield;
+	}
+	Obj_Delete(optionEffect);
+}
+	
+function OptionFinishFlags(op_obj)
+{
+	Obj_SetValue(op_obj, "ACTIVE", 0);
+}
+
+function OptionResetFlags(op_obj)
+{
+	Obj_SetValue(op_obj, "ACTIVE", -1);
+	Obj_SetValue(op_obj, "RESET", true);
+}
+
+
+task SpellcardBomb
+{
+	let objManage = GetSpellManageObject;
+	let TotalSpellTime = 90;
+	let MSring = 0;
+	let Spell_Time = 0;
+	
+	PlaySE(se_slash);
+	CreateBombDoll(GetPlayerX, GetPlayerY - 35);
+	SetPlayerInvincibilityFrame(150);
+	while(Spell_Time < TotalSpellTime)
+	{
+		Spell_Time++;
+		yield;
+	}
+	Obj_Delete(objManage);
+}
+
+task CreateBombDoll(x, y)
+{
+	let glob_frame = 0;
+	
+	task CreateBombLaser(x, y)
+	{
+		let scale = 0;
+		let x_offset = 0;
+		let effAlpha = 0;
+		
+		let spellObj = ObjSpell_Create();
+		ObjSpell_Regist(spellObj);
+		ObjSpell_SetDamage(spellObj, 3.5 * player_BombDamageMultiplier);
+		
+		let spellObjB = ObjSpell_Create();
+		ObjSpell_Regist(spellObjB);
+		
+		let laserObj = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(laserObj, img_pl00);
+		ObjSprite2D_SetSourceRect(laserObj, 0, 176, 512, 192);
+		ObjSprite2D_SetDestRect(laserObj, 0, -8, 512, 8);
+		ObjRender_SetPosition(laserObj, round(x), round(y), 0);
+		ObjRender_SetAlpha(laserObj, 255);
+		ObjRender_SetScaleXYZ(laserObj, 1, 1, 1);
+		ObjRender_SetAngleZ(laserObj, 270);
+		Obj_SetRenderPriorityI(laserObj, bg_renderPriority + 1);
+		
+		let effectObject = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(effectObject, img_pl00a);
+		ObjSprite2D_SetSourceRect(effectObject, 0, 0, 194, 714);
+		ObjSprite2D_SetDestRect(effectObject, -97, 0, 97, 714);
+		ObjRender_SetPosition(effectObject, round(x), round(y) - 600, 0);
+		ObjRender_SetBlendType(effectObject, BLEND_MULTIPLY);
+		ObjRender_SetScaleXYZ(effectObject, 1, 1, 1);
+		Obj_SetRenderPriorityI(effectObject, bg_renderPriority);
+		
+		while(glob_frame < 90)
+		{
+			if(scale < 1)
+			{
+				scale += 0.25;
+			}
+			if(effAlpha < 255)
+			{
+				effAlpha += 70;
+			}
+			x_offset -= 5;
+			ObjRender_SetScaleXYZ(laserObj, 1, scale, 1);
+			ObjRender_SetScaleXYZ(effectObject, 1, scale, 1);
+			ObjSprite2D_SetSourceRect(laserObj, 0 + x_offset, 176, 512 + x_offset, 192);
+			ObjSpell_SetIntersectionLine(spellObj, x, y, x, -100, 20);
+			ObjSpell_SetIntersectionCircle(spellObjB, x, y + 10, 30);
+			yield;
+		}
+		while(scale > 0.1)
+		{
+			if(effAlpha > 0)
+			{
+				effAlpha -= 50;
+			}
+			scale -= 0.1;
+			ObjRender_SetScaleXYZ(laserObj, 1, scale, 1);
+			ObjRender_SetScaleXYZ(effectObject, 1, scale, 1);
+			yield;
+		}
+		Obj_Delete(laserObj);
+		Obj_Delete(spellObj);
+		Obj_Delete(spellObjB);
+	}
+	
+	task CreateDollObject(x, y)
+	{
+		let scale = 2;
+		let alpha = 0;
+		let y_vel = 0;
+		let y_velMod = 0.1;
+		let dollAngle = 0;
+		
+		let dollObj = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(dollObj, img_pl00);
+		Obj_SetRenderPriorityI(dollObj, bg_renderPriority + 2);
+		ObjSprite2D_SetSourceRect(dollObj, 192, 143, 224, 175);
+		ObjSprite2D_SetDestCenter(dollObj);
+		ObjRender_SetPosition(dollObj, round(x), round(y), 0);
+		ObjRender_SetAlpha(dollObj, alpha);
+		ObjRender_SetScaleXYZ(dollObj, scale, scale, 1);
+		
+		while(glob_frame < 90)
+		{
+			if(scale > 1)
+			{
+				scale -= 0.25;
+				alpha += 65;
+			}
+			ObjRender_SetScaleXYZ(dollObj, scale, scale, 1);
+			ObjRender_SetAlpha(dollObj, alpha);
+			yield;
+		}
+		while(alpha > 0)
+		{
+			y_vel += y_velMod;
+			y_velMod += 0.1;
+			alpha -= 15;
+			dollAngle += 7;
+			ObjRender_SetPosition(dollObj, round(x), y + y_vel, 0);
+			ObjRender_SetAlpha(dollObj, alpha);
+			ObjRender_SetAngleZ(dollObj, dollAngle);
+			yield;
+		}
+		Obj_Delete(dollObj);
+	}
+	
+	task CreateParticleEffect(x, y)
+	{
+		task Particle(x, y, angle, radius, scale)
+		{
+			let alpha = 0;
+			
+			let objParticle = ObjPrim_Create(OBJ_SPRITE_2D);
+			ObjPrim_SetTexture(objParticle, img_pl00);
+			ObjSprite2D_SetSourceRect(objParticle, 224, 143, 255, 174);
+			ObjSprite2D_SetDestCenter(objParticle);
+			ObjRender_SetBlendType(objParticle, BLEND_ADD_ARGB);
+			ObjRender_SetColor(objParticle, alpha, alpha, alpha);
+			ObjRender_SetScaleXYZ(objParticle, scale, scale, 1);
+			Obj_SetRenderPriorityI(objParticle, bg_renderPriority_particle);
+			while(radius > 0)
+			{
+				ObjRender_SetPosition(objParticle, x + radius*cos(angle), y + radius*sin(angle), 1);
+				ObjRender_SetColor(objParticle, alpha, alpha, alpha);
+				radius -= 3.5;
+				if(alpha < 200)
+				{
+					alpha += 60;
+				}
+				yield;
+			}
+			Obj_Delete(objParticle);
+		}
+		
+		while(glob_frame < 90)
+		{
+			Particle(x, y, rand(0,360), 50, rand(0.3, 1.1));
+			yield;
+		}
+	}
+	
+	CreateBombLaser(x, y);
+	CreateDollObject(x, y);
+	CreateParticleEffect(x, y);
+	
+	while(glob_frame < 90)
+	{
+		glob_frame++;
+		yield;
+	}
+}
+
+
+task PowerCheck(didGet, op_deleteType)
+{
+	if(playerPower >= 0 && playerPower < 100 && powerState != 0)
+	{
+		powerState = 0;
+		opPos_current = opPos_Array[powerState];
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[1]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		optionArray = [GetPlayerObjectID, 0, 0, 0, 0, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 100 && playerPower < 200 && powerState != 1)
+	{
+		powerState = 1;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[2]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		optionArray = [GetPlayerObjectID, optionOne, 0, 0, 0, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 200 && playerPower < 300 && powerState != 2)
+	{
+		powerState = 2;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[3]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, 0, 0, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 300 && playerPower < 400 && powerState != 3)
+	{
+		powerState = 3;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, 0, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 400 && playerPower < 500 && powerState != 4)
+	{
+		powerState = 4;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		OptionResetFlags(optionFour);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 500 && playerPower < 600 && powerState != 5)
+	{
+		powerState = 5;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		OptionResetFlags(optionFour);
+		OptionResetFlags(optionFive);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour, optionFive, 0, 0, 0];
+	}
+	else if(playerPower >= 600 && playerPower < 700 && powerState != 6)
+	{
+		powerState = 6;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		OptionResetFlags(optionFour);
+		OptionResetFlags(optionFive);
+		OptionResetFlags(optionSix);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour, optionFive, optionSix, 0, 0];
+	}
+	else if(playerPower >= 700 && playerPower < 800 && powerState != 7)
+	{
+		powerState = 7;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		OptionResetFlags(optionFour);
+		OptionResetFlags(optionFive);
+		OptionResetFlags(optionSix);
+		OptionResetFlags(optionSeven);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour, optionFive, optionSix, optionSeven, 0];
+	}
+	else if(playerPower >= 800 && powerState != 8)
+	{
+		powerState = 8;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		
+		if(didGet != -1)
+		{
+			alternative(op_deleteType)
+			case(0)
+			{
+				ascent(i in 1..length(optionArray))
+				{
+					if(optionArray[i] != 0)
+					{
+						OptionFinishFlags(optionArray[i]);
+					}
+				}
+			}
+			case(2)
+			{
+				ascent(i in 1..length(optionArray))
+				{
+					if(optionArray[i] != 0)
+					{
+						OptionDeathEffect(optionArray[i]);
+						OptionFinishFlags(optionArray[i]);
+					}
+				}
+			}
+			OptionResetFlags(optionOne);
+			OptionResetFlags(optionTwo);
+			OptionResetFlags(optionThree);
+			OptionResetFlags(optionFour);
+			OptionResetFlags(optionFive);
+			OptionResetFlags(optionSix);
+			OptionResetFlags(optionSeven);
+			OptionResetFlags(optionEight);
+			optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour, optionFive, optionSix, optionSeven, optionEight];
+		}
+	}
+}
+
+task CreateRainbowPlayerShot(x, y, speed, angle, dmg, pene)
+{
+	if(!IsPermitPlayerShot)
+	{
+		return;
+	}
+	
+	function ShotFade
+	{
+		let alpha = 100;
+		let loc_ang = angle;
+		let loc_angMod = rand(-9, 9);
+		
+		let scalex = 1;
+		let scaley = 1;
+		let scalez = 1;
+		
+		let inx = loc_x;
+		let iny = loc_y;
+		
+		let fadeeff = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(fadeeff, img_pl00_shot);
+		ObjSprite2D_SetSourceRect(fadeeff, 81, 0, 89, 32);
+		ObjSprite2D_SetDestCenter(fadeeff);
+		ObjRender_SetBlendType(fadeeff, BLEND_ADD_ARGB);
+		ObjRender_SetAlpha(fadeeff, 150);
+		Obj_SetRenderPriorityI(fadeeff, 47);
+		
+		ObjRender_SetPosition(fadeeff, inx, iny, 1);
+		ObjRender_SetScaleXYZ(fadeeff, 1, 1, 1);
+		ObjRender_SetAngleZ(fadeeff, rand(-15,15));
+		
+		while(scalex > 0)
+		{
+			inx += 1.5 * cos(angle);
+			iny += 1.5 * sin(angle);
+			scalex -= 0.05;
+			scaley += 0.25;
+			loc_ang += loc_angMod;
+			ObjRender_SetScaleXYZ(fadeeff, scalex, scaley, 1);
+			ObjRender_SetAlpha(fadeeff, alpha);
+			ObjRender_SetPosition(fadeeff, inx, iny, 1);
+			ObjRender_SetAngleZ(fadeeff, loc_ang);
+			yield;
+		}
+		Obj_Delete(fadeeff);
+	}
+	
+	let loc_x;
+	let loc_y;
+	
+	let colorFrame = 0;
+	
+	if(x > -16 || x < 400)
+	{
+		let obj = CreatePlayerShotA1(x, y, speed, angle, dmg, 1, 2);
+		ObjRender_SetBlendType(obj, BLEND_ADD_ARGB);
+		Obj_SetRenderPriorityI(obj, 29);
+		
+		while(!Obj_IsDeleted(obj))
+		{
+			loc_x = ObjMove_GetX(obj);
+			loc_y = ObjMove_GetY(obj);
+			
+			ObjRender_SetColorHSV(obj, colorFrame, 160, 200);
+			colorFrame += 8;
+			yield;
+		}
+		if(loc_y >= 0)
+		{
+			ShotFade;
+		}
+	}
+}

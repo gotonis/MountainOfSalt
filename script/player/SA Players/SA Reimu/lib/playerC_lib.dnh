@@ -1,0 +1,1235 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Reimu
+	by Frenticpony
+	
+	playerC_lib.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+let optionX1 = 80;
+let optionY1 = 144;
+let optionX2 = 96;
+let optionY2 = 160;
+
+let optionDistanceArray = [64, 24];
+//angoffset, xoffset unfocus, xoffset focus
+let opPos_levelOne   = [ 
+	[0, 0, 0], //rad = 32; offsetX = 0; offsetY = 0;
+	[0, 0, 0],
+	[0, 0, 0], 
+	[0, 0, 0] ];
+	
+let opPos_levelTwo   = [ 
+	[0, 0, 0], 
+	[180, 0, 0],  
+	[0, 0, 0], 
+	[0, 0, 0] ];
+	
+let opPos_levelThree = [ 
+	[0, -5, -2], 
+	[180, 0, 0],  
+	[0, 5, 2], 
+	[0, 0, 0] ];
+	
+let opPos_levelFour = [ 
+	[0, -5, -2], 
+	[180, -5, -2],  
+	[0, 5, 2], 
+	[180, 5, 2] ];
+
+let player_maxPower = 400;
+
+/* ---------------------------------------
+
+--------------------------------------- */
+
+let opPos_none   = [ [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0] ];
+let opPos_current = opPos_none;
+let opPos_Array = [opPos_none, opPos_levelOne, opPos_levelTwo, opPos_levelThree, opPos_levelFour];
+
+let optionOne = 0;
+let optionTwo = 0;
+let optionThree = 0;
+let optionFour = 0;
+
+let optionArray = [GetPlayerObjectID, 0, 0, 0, 0];
+
+let player_angle = 0;
+let player_angleAbs = 0;
+let player_pos = [0, 0];
+let player_lastPos = [0, 0];
+let option_angle = 0;
+let op_angleDiff = 0;
+let op_angleDiffAbs = 0;
+let op_angleMod = 6;
+
+function ExclFire()
+{
+	ShotSE(3);
+	alternative(GetVirtualKeyState(VK_SLOWMOVE))
+	case(KEY_FREE, KEY_PULL)
+	{
+		alternative(powerState)
+		case(0)
+		{
+			MainFire(0, 3, 16, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 16, 10, 16, 24, 270, 1);
+		}
+		case(1)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 3, 15, 0, 0, 12, option_angle, 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+		}
+		case(2)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 3, 15, 0, 0, 12, option_angle, 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			
+			OptionFire(2, 3, 15, 0, 0, 12, option_angle + 180, 1);
+			OptionFire(2, 8, 5, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			OptionFire(2, 8, 5, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+		}
+		case(3)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 3, 12, 0, 0, 12, option_angle - 8, 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire(2, 3, 12, 0, 0, 12, option_angle + 180, 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			
+			OptionFire(3, 3, 12, 0, 0, 12, option_angle + 8, 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+		}
+		case(4)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire(1, 3, 12, 0, 0, 12, option_angle - 8, 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire(2, 3, 12, 0, 0, 12, option_angle + 188, 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			
+			OptionFire(3, 3, 12, 0, 0, 12, option_angle + 8, 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire(4, 3, 12, 0, 0, 12, option_angle + 172, 1);
+			OptionFire(4, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			OptionFire(4, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+		}
+	}
+	case(KEY_HOLD, KEY_PUSH)
+	{
+		alternative(powerState)
+		case(0)
+		{
+			MainFire(0, 3, 16, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 16, 10, 16, 24, 270, 1);
+		}
+		case(1)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire2(1, 3, 15, 0, 0, 30, option_angle, 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+		}
+		case(2)
+		{
+			MainFire(0, 3, 12, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 12, 10, 16, 24, 270, 1);
+			
+			OptionFire2(1, 3, 15, 0, 0, 30, option_angle, 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			OptionFire(1, 8, 5, 0, 0, 12, option_angle + rand(-16, 16), 1);
+			
+			OptionFire2(2, 3, 15, 0, 0, 30, option_angle + 180, 1);
+			OptionFire(2, 8, 5, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			OptionFire(2, 8, 5, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+		}
+		case(3)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire2(1, 3, 12, 0, 0, 30, option_angle - 4, 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire2(2, 3, 12, 0, 0, 30, option_angle + 180, 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-16, 16), 1);
+			
+			OptionFire2(3, 3, 12, 0, 0, 30, option_angle + 4, 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+		}
+		case(4, 5)
+		{
+			MainFire(0, 3, 9, -10, 16, 24, 270, 1);
+			MainFire(0, 3, 9, 10, 16, 24, 270, 1);
+			
+			OptionFire2(1, 3, 12, 0, 0, 30, option_angle - 4, 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(1, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire2(2, 3, 12, 0, 0, 30, option_angle + 184, 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			OptionFire(2, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			
+			OptionFire2(3, 3, 12, 0, 0, 30, option_angle + 4, 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			OptionFire(3, 8, 4, 0, 0, 12, option_angle + rand(-24, 24), 1);
+			
+			OptionFire2(4, 3, 12, 0, 0, 30, option_angle + 176, 1);
+			OptionFire(4, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+			OptionFire(4, 8, 4, 0, 0, 12, option_angle + 180 + rand(-24, 24), 1);
+		}
+	}
+}
+
+function InitExclPlayer()
+{
+
+}
+
+function ResetExclPlayer()
+{
+
+}
+
+function MainLoopExcl()
+{	
+	if(globalFireTimer == -1 && GetVirtualKeyState(VK_SLOWMOVE) != KEY_HOLD && GetVirtualKeyState(VK_SLOWMOVE) != KEY_PUSH)
+	{
+		player_speed = [10, 2];
+		doTrail = true;
+	}
+	else
+	{
+		player_speed = [4.5, 2];
+		doTrail = false;
+	}
+	
+	player_angle = CheckDirection;
+	op_angleDiff = player_angle - option_angle;
+	while(op_angleDiff >= 180) { op_angleDiff -= 360; }
+	while(op_angleDiff < -180) { op_angleDiff += 360; }
+	op_angleDiffAbs = (|op_angleDiff|);
+
+	if(IsMoveKeyHeld)
+	{
+		if(GetVirtualKeyState(VK_SLOWMOVE) != KEY_HOLD && GetVirtualKeyState(VK_SLOWMOVE) != KEY_PUSH)
+		{
+			op_angleMod = InterpolateValue(1, 11, op_angleDiffAbs, IP_DECELERATE, 180);
+			if(op_angleDiffAbs > 10)
+			{
+				option_angle += op_angleMod * op_angleDiff / (op_angleDiffAbs/2);
+			}
+			else if(op_angleDiffAbs <= 10)
+			{
+				option_angle = player_angle;
+			}
+		}
+	}
+	
+	UpdateOptionMovePosition(optionOne, 0);
+	UpdateOptionMovePosition(optionTwo, 1);
+	UpdateOptionMovePosition(optionThree, 2);
+	UpdateOptionMovePosition(optionFour, 3);
+	
+	ExclFire();
+}
+
+function IsMoveKeyHeld
+{
+	if(GVKS(VK_LEFT, KEY_PUSH, KEY_HOLD) ||
+	GVKS(VK_RIGHT, KEY_PUSH, KEY_HOLD) ||
+	GVKS(VK_UP, KEY_PUSH, KEY_HOLD) ||
+	GVKS(VK_DOWN, KEY_PUSH, KEY_HOLD))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+}
+
+function CheckDirection
+{
+	let cdAng = 0;
+	if(GVKS(VK_LEFT, KEY_PUSH, KEY_HOLD) && GVKS(VK_RIGHT, KEY_FREE, KEY_PULL))
+	{
+		if(GVKS(VK_UP, KEY_PUSH, KEY_HOLD) && GVKS(VK_DOWN, KEY_FREE, KEY_PULL))
+		{
+			cdAng = 45;
+		}
+		else if(GVKS(VK_DOWN, KEY_PUSH, KEY_HOLD) && GVKS(VK_UP, KEY_FREE, KEY_PULL))
+		{
+			cdAng = -45;
+		}
+		else
+		{
+			cdAng = 0;
+		}
+	}
+	else if(GVKS(VK_RIGHT, KEY_PUSH, KEY_HOLD) && GVKS(VK_LEFT, KEY_FREE, KEY_PULL))
+	{
+		if(GVKS(VK_UP, KEY_PUSH, KEY_HOLD) && GVKS(VK_DOWN, KEY_FREE, KEY_PULL))
+		{
+			cdAng = 135;
+		}
+		else if(GVKS(VK_DOWN, KEY_PUSH, KEY_HOLD) && GVKS(VK_UP, KEY_FREE, KEY_PULL))
+		{
+			cdAng = -135;
+		}
+		else
+		{
+			cdAng = 180;
+		}
+	}
+	else if(GVKS(VK_UP, KEY_PUSH, KEY_HOLD) && GVKS(VK_DOWN, KEY_FREE, KEY_PULL))
+	{
+		cdAng = 90;
+	}
+	else if(GVKS(VK_DOWN, KEY_PUSH, KEY_HOLD) && GVKS(VK_UP, KEY_FREE, KEY_PULL))
+	{
+		cdAng = -90;
+	}
+	return cdAng;
+}
+
+function GVKS(checkKey, keyStateA, keyStateB)
+{
+	alternative(GetVirtualKeyState(checkKey))
+	case(keyStateA, keyStateB)
+	{
+		return true;
+	}
+	others
+	{
+		return false;
+	}
+}
+
+
+function OptionFire(op_obj, rate, damage, offsetX, offsetY, speed, angle, pene)
+{
+	let loc_op = optionArray[op_obj];
+	if(canPlayerFire == true && !isPlayerDead)
+	{
+		if(CheckModulo(globalFireTimer, rate) == true)
+		{
+			Fire();
+		}
+	}
+	
+	function Fire()
+	{
+		CreateAyaPlayerShot(ObjRender_GetX(loc_op) + offsetX, ObjRender_GetY(loc_op) + offsetY, speed, angle, damage * player_DamageMultiplier, pene);
+	}
+}
+
+function OptionFire2(op_obj, rate, damage, offsetX, offsetY, speed, angle, pene)
+{
+	let loc_op = optionArray[op_obj];
+	if(canPlayerFire == true && !isPlayerDead)
+	{
+		if(CheckModulo(globalFireTimer, rate) == true)
+		{
+			Fire();
+		}
+	}
+	
+	function Fire()
+	{
+		CreateRedPlayerShot(ObjRender_GetX(loc_op) + offsetX, ObjRender_GetY(loc_op) + offsetY, speed, angle, damage * player_DamageMultiplier, pene);
+	}
+}
+
+task InitOptions()
+{
+	optionOne = CreateOptionObject();
+	optionTwo = CreateOptionObject();
+	optionThree = CreateOptionObject();
+	optionFour = CreateOptionObject();
+
+	OptionDrawLoop(optionOne, 0);
+	OptionDrawLoop(optionTwo, 0);
+	OptionDrawLoop(optionThree, 0);
+	OptionDrawLoop(optionFour, 0);
+}
+
+function FinishOptions()
+{
+	ascent(i in 0..length(optionArray))
+	{
+		if(optionArray[i] != 0)
+		{
+			OptionDeathEffect(optionArray[i]);
+			OptionFinishFlags(optionArray[i]);
+		}
+	}
+}
+
+function CreateOptionObject()
+{
+	let op_obj = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjRender_SetPosition(op_obj, GetPlayerX, GetPlayerY, 0);
+	Obj_SetValue(op_obj, "ACTIVE", 0);
+	Obj_SetValue(op_obj, "ANIM", 0);
+	return op_obj;
+}
+
+function UpdateOptionMovePosition(op_obj, loc_pos)
+{
+	let distancetopoint = Obj_GetValueD(op_obj, "dis2p", 0);
+	let directiontopoint = Obj_GetValueD(op_obj, "dir2p", 0);
+
+	let destinationx = Obj_GetValueD(op_obj, "dx", 0);
+	let destinationy = Obj_GetValueD(op_obj, "dy", 0);
+	
+	alternative(Obj_GetValueD(op_obj, "ACTIVE", 0))
+	case(-1)
+	{
+		if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+		{
+			destinationx = (GetPlayerX + 32 * cos(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][2] * cos(option_angle + 90);
+			destinationy = (GetPlayerY + 32 * sin(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][2] * sin(option_angle + 90);
+		}
+		else
+		{
+			destinationx = (GetPlayerX + 32 * cos(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][1] * cos(option_angle + 90);
+			destinationy = (GetPlayerY + 32 * sin(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][1] * sin(option_angle + 90);
+		}
+		ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+		Obj_SetValue(op_obj, "ACTIVE", 1);
+	}
+	case(0)
+	{
+		
+	}
+	case(1)
+	{
+		distancetopoint = ((destinationx - ObjRender_GetX(op_obj))^2 + (destinationy - ObjRender_GetY(op_obj))^2)^0.5;
+		directiontopoint = atan2(destinationy - ObjRender_GetY(op_obj),destinationx - ObjRender_GetX(op_obj));
+		if(distancetopoint >= 1)
+		{
+			ObjRender_SetPosition(op_obj, ObjRender_GetX(op_obj) + cos(directiontopoint) * distancetopoint * 0.4, ObjRender_GetY(op_obj) + sin(directiontopoint) * distancetopoint * 0.4, 1);
+		}
+		else
+		{
+			ObjRender_SetPosition(op_obj, destinationx, destinationy, 1);
+		}
+		
+		if(GetVirtualKeyState(VK_SLOWMOVE) == KEY_HOLD)
+		{
+			destinationx = (GetPlayerX + 32 * cos(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][2] * cos(option_angle + 90);
+			destinationy = (GetPlayerY + 32 * sin(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][2] * sin(option_angle + 90);
+		}
+		else
+		{
+			destinationx = (GetPlayerX + 32 * cos(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][1] * cos(option_angle + 90);
+			destinationy = (GetPlayerY + 32 * sin(option_angle + opPos_current[loc_pos][0])) + opPos_current[loc_pos][1] * sin(option_angle + 90);
+		}
+	}
+	
+	Obj_SetValue(op_obj, "dis2p", distancetopoint);
+	Obj_SetValue(op_obj, "dir2p", directiontopoint);
+	Obj_SetValue(op_obj, "dx", destinationx);
+	Obj_SetValue(op_obj, "dy", destinationy);
+}
+
+task OptionDrawLoop(op_obj, angle)
+{
+	let orbit = 0;
+	let orbitB = 0;
+	let count = 0;
+	let animFrame = 0;
+	let animState = 0;
+	let animScale = 0.25;
+	let animScaleMod = 0.32;
+	
+	let optionDraw = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optionDraw, img_pl00);
+	ObjSprite2D_SetSourceRect(optionDraw, optionX1, optionY1, optionX2, optionY2);
+	ObjSprite2D_SetDestRect(optionDraw, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optionDraw, BLEND_ALPHA);
+	Obj_SetRenderPriorityI(optionDraw, 25);
+	
+	let optioneffect = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optioneffect, img_pl00);
+	ObjSprite2D_SetSourceRect(optioneffect, optionX1, optionY1, optionX2, optionY2);
+	ObjSprite2D_SetDestRect(optioneffect, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optioneffect, BLEND_ADD_ARGB);
+	Obj_SetRenderPriorityI(optioneffect, 24);
+	
+	while(!Obj_IsDeleted(op_obj))
+	{
+		if(playerPower != player_maxPower)
+		{
+			ObjRender_SetAlpha(optioneffect, 0);
+		}
+		else
+		{
+			ObjRender_SetAlpha(optioneffect, 150);
+		}
+		
+		if(Obj_GetValueD(op_obj, "RESET", false) == true)
+		{
+			animState = 0;
+			animFrame = 0;
+			animScale = 0.25;
+			animScaleMod = 0.2;
+			orbitB = 0;
+			Obj_SetValue(op_obj, "RESET", false);
+		}
+		
+		alternative(Obj_GetValueD(op_obj, "ACTIVE", 0))
+		case(-1, 0)
+		{
+			ObjRender_SetAlpha(optionDraw, 0);
+			ObjRender_SetAlpha(optioneffect, 0);
+		}
+		case(1)
+		{
+			if(animState == 0)
+			{
+				if(animFrame == 14)
+				{
+					animState = 1;
+				}
+				count = 0;
+				animScale += animScaleMod;
+				animScaleMod -= 0.021;
+				orbitB += 13;
+				ObjRender_SetScaleXYZ(optionDraw, animScale, animScale, 1);
+				ObjRender_SetBlendType(optionDraw, BLEND_ADD_ARGB);
+				animFrame++;
+			}
+			else
+			{
+				animScale = 1;
+				ObjRender_SetScaleXYZ(optionDraw, 0.95, 0.95, 1);
+				ObjRender_SetBlendType(optionDraw, BLEND_ALPHA);
+				count++;
+			}
+			ObjRender_SetAlpha(optionDraw, 255);
+		}
+
+		ObjRender_SetAngleZ(optioneffect, orbit);
+		ObjRender_SetAngleZ(optionDraw, orbitB);
+		
+		ObjRender_SetScaleXYZ(optioneffect, 1.52, 1.52, 1);
+		
+		ObjRender_SetPosition(optionDraw, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+		ObjRender_SetPosition(optioneffect, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+		
+		orbit -= 6;
+		orbitB += 6;
+		yield;
+	}
+	let scale = 1;
+	while(scale > 0)
+	{
+		scale -= 0.25;
+		ObjRender_SetScaleY(optionDraw, scale/2);
+		ObjRender_SetScaleX(optioneffect, scale);
+		yield;
+	}
+	Obj_Delete(optionDraw);
+	Obj_Delete(optioneffect);
+}
+
+task OptionDeathEffect(op_obj)
+{
+	let eff_scaleX = 1;
+	let eff_scaleY = 1;
+	let eff_angle = 0;
+	let optionEffect = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(optionEffect, img_pl00);
+	ObjSprite2D_SetSourceRect(optionEffect, optionX1, optionY1, optionX2, optionY2);
+	ObjSprite2D_SetDestRect(optionEffect, -7.5, -7.5, 8.5, 8.5);
+	ObjRender_SetBlendType(optionEffect, BLEND_ADD_ARGB);
+	Obj_SetRenderPriorityI(optionEffect, 25);
+	ObjRender_SetPosition(optionEffect, ObjRender_GetX(op_obj), ObjRender_GetY(op_obj), 1);
+	
+	while(eff_scaleX > 0)
+	{
+		eff_scaleX -= 0.1;
+		eff_scaleY += 0.1;
+		eff_angle += 4;
+		ObjRender_SetScaleXYZ(optionEffect, eff_scaleX, eff_scaleY, 1);
+		ObjRender_SetAngleZ(optionEffect, eff_angle);
+		yield;
+	}
+	Obj_Delete(optionEffect);
+}
+	
+function OptionFinishFlags(op_obj)
+{
+	Obj_SetValue(op_obj, "ACTIVE", 0);
+}
+
+function OptionResetFlags(op_obj)
+{
+	Obj_SetValue(op_obj, "ACTIVE", -1);
+	Obj_SetValue(op_obj, "RESET", true);
+}
+
+
+task SpellcardBomb()
+{
+	let objManage = GetSpellManageObject;
+	let bombX = ObjMove_GetX(GetPlayerID);
+	let bombY = ObjMove_GetY(GetPlayerID);
+	let Spell_Time = 0;
+	let TotalSpellTime = 270;
+	
+	let spellcardBomb = ObjSpell_Create();
+	ObjSpell_Regist(spellcardBomb);
+	ObjSpell_SetDamage(spellcardBomb, 10);
+	ObjSpell_SetEraseShot(spellcardBomb, true);
+	
+	PlaySE(se_spark);
+	PlaySE(se_slash);
+
+	SpellcardBG();
+	SpellcardBorder();
+	SetPlayerInvincibilityFrame(300);
+	while(Spell_Time < TotalSpellTime)
+	{
+		Spell_Time++;
+		//SpellcardHitbox;
+		yield;
+	}
+	Obj_Delete(objManage);
+	Obj_Delete(spellcardBomb);
+	
+	function SpellcardHitbox
+	{
+		let ar = GetShotIdInCircleA1(GetPlayerX, GetPlayerY, 96);
+		ascent(i in 0..length(ar))
+		{
+			if(!ObjShot_IsSpellResist(ar[i]))
+			{
+				ObjShot_SetDeleteFrame(ar[i], 0);
+			}
+		}
+	}
+	
+	task SpellcardBG()
+	{
+		let bombTime = 0;
+		let vertFrame = 0;
+		let blendScaleFrame = 0;
+		let maxBombTime = 270;
+		
+		let bgTime = 0;
+		let bgScale = 1;
+		
+		let countVertex = 64;
+		
+		let texMod = 0;
+
+		let radiusA = 20;
+		let radiusB = 0;
+
+		let blendScale = 10;
+		let objBlend = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(objBlend, img_pl00f);
+		ObjSprite2D_SetSourceRect(objBlend, 0, 0, 512, 512);
+		ObjSprite2D_SetDestRect(objBlend, -256, -256, 256, 256);
+		ObjRender_SetBlendType(objBlend, BLEND_MULTIPLY);
+		Obj_SetRenderPriorityI(objBlend, bg_renderPriority);
+		
+		let objBG = InitVertex();
+		
+		ObjRender_SetPosition(objBG, bombX, bombY, 0);
+		ObjRender_SetColor(objBG, 255, 255, 255);
+		ObjRender_SetScaleX(objBG, -1);
+		
+		while(Spell_Time < TotalSpellTime)
+		{
+			ObjRender_SetPosition(objBG, GetPlayerX, GetPlayerY, 0);
+			ObjRender_SetPosition(objBlend, GetPlayerX, GetPlayerY, 0);
+			
+			if(vertFrame < 32)
+			{
+				radiusA = InterpolateValue2(20, 128, vertFrame, IP_DECELERATE, 32, 1);
+				vertFrame++;
+			}
+			if(blendScaleFrame < 42)
+			{
+				blendScale = InterpolateValue2(10, 202, blendScaleFrame, IP_DECELERATE, 42, 1);
+				blendScaleFrame++;
+			}
+			
+			ObjSpell_SetIntersectionCircle(spellcardBomb, GetPlayerX, GetPlayerY, radiusA);
+			DrawVertex(objBG, radiusA, radiusB);
+			UpdateVertexUVT(objBG, radiusA, texMod);
+			ObjSprite2D_SetDestRect(objBlend, -blendScale, -blendScale, blendScale, blendScale);
+			
+			texMod += 5.5;
+			bombTime++;			
+			yield;
+		}
+		while(bgTime < 30)
+		{
+			ObjRender_SetPosition(objBG, GetPlayerX, GetPlayerY, 0);
+			ObjRender_SetPosition(objBlend, GetPlayerX, GetPlayerY, 0);
+			
+			bgScale = InterpolateValue2(1, 0.05, bgTime, IP_DECELERATE, 48, 5);
+			blendScale = InterpolateValue2(202, 10, bgTime, IP_DECELERATE, 48, 5);
+			
+			ObjRender_SetScaleXYZ(objBG, -bgScale, bgScale, 1);
+			ObjSprite2D_SetDestRect(objBlend, -blendScale, -blendScale, blendScale, blendScale);
+			bgTime++;
+			yield;
+		}
+		Obj_Delete(objBG);
+		Obj_Delete(objBlend);
+		
+		function InitVertex()
+		{
+			let store = 0;
+			
+			let objVert = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+			ObjPrim_SetPrimitiveType(objVert, PRIMITIVE_TRIANGLESTRIP);
+			ObjPrim_SetVertexCount(objVert, countVertex + 2);
+			ObjRender_SetBlendType(objVert, BLEND_ALPHA);
+			ObjPrim_SetTexture(objVert, img_pl00d);
+			Obj_SetRenderPriorityI(objVert, bg_renderPriority);
+			ObjRender_SetAngleZ(objVert, 270);
+			
+			loop((countVertex / 2) + 2)
+			{
+				let left = store * 4;
+				ObjPrim_SetVertexUVT(objVert, store, left, 0);
+				ObjPrim_SetVertexUVT(objVert, store + 1, left + 4, countVertex);	
+				store += 2;
+			}
+			return objVert;
+		}
+		
+		function UpdateVertexUVT(obj, radius, textureMod)
+		{
+			ascent(i in 0..countVertex)
+			{
+				let indexVert = i * 2;
+				ObjPrim_SetVertexUVT(objBG, indexVert, (142) + 32*i, (0 - radiusA) + texMod);
+				ObjPrim_SetVertexUVT(objBG, indexVert + 1, (142 + 32) + 32*i, (64) + texMod);
+			}
+		}
+		
+		function DrawVertex(obj, radA, radB)
+		{
+			let angle = 0;
+			let loc_indexVert = 0;
+			loop((countVertex / 2) + 2)
+			{
+				let vx1 = radA * cos(angle);
+				let vy1 = radA * sin(angle);
+				ObjPrim_SetVertexPosition(obj, loc_indexVert, vx1, vy1, 0);
+				ObjPrim_SetVertexAlpha(obj, loc_indexVert, 256);
+				
+				let vx2 = radB * cos(angle);
+				let vy2 = radB * sin(angle);
+				ObjPrim_SetVertexPosition(obj, loc_indexVert + 1, vx2, vy2, 0);
+				ObjPrim_SetVertexAlpha(obj, loc_indexVert + 1, 256);
+				
+				angle += (360/(countVertex/2));
+				loc_indexVert += 2;
+			}
+		}
+	}
+
+	task SpellcardBorder()
+	{
+		let bombTime = 0;
+		let vertFrame = 0;
+		let maxBombTime = 270;
+		
+		let bgTime = 0;
+		let bgScale = 1;
+		
+		let countVertex = 128;
+		
+		let texMod = 0;
+
+		let radiusA = 0;
+		let radiusB = 0;
+		
+		let objBG = InitVertex();
+		
+		ObjRender_SetPosition(objBG, bombX, bombY, 0);
+		ObjRender_SetColor(objBG, 255, 255, 255);
+		ObjRender_SetScaleX(objBG, -1);
+		
+		while(Spell_Time < TotalSpellTime)
+		{
+			ObjRender_SetPosition(objBG, GetPlayerX, GetPlayerY, 0);
+			
+			if(vertFrame < 32)
+			{
+				radiusA = InterpolateValue2(32, 128 + 16, vertFrame, IP_DECELERATE, 32, 1);
+				radiusB = InterpolateValue2(32, 128 - 16, vertFrame, IP_DECELERATE, 32, 1);
+				vertFrame++;
+			}
+			
+			DrawVertex(objBG, radiusA, radiusB);
+			UpdateVertexUVT(objBG, radiusA, texMod);
+			
+			texMod += 8;
+			bombTime++;
+			yield;
+		}
+		while(bgTime < 32)
+		{
+			ObjRender_SetPosition(objBG, GetPlayerX, GetPlayerY, 0);
+			
+			bgScale = InterpolateValue2(1, 0.05, bgTime, IP_DECELERATE, 48, 5);
+			
+			ObjRender_SetScaleXYZ(objBG, -bgScale, bgScale, 1);
+			bgTime++;
+			yield;
+		}
+		Obj_Delete(objBG);
+		
+		function InitVertex()
+		{
+			let store = 0;
+			
+			let objVert = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+			ObjPrim_SetPrimitiveType(objVert, PRIMITIVE_TRIANGLESTRIP);
+			ObjPrim_SetVertexCount(objVert, countVertex + 2);
+			ObjRender_SetBlendType(objVert, BLEND_ALPHA);
+			ObjPrim_SetTexture(objVert, img_pl00e);
+			Obj_SetRenderPriorityI(objVert, bg_renderPriority);
+			ObjRender_SetAngleZ(objVert, 270);
+			
+			loop((countVertex / 2) + 2)
+			{
+				let left = store * 4;
+				ObjPrim_SetVertexUVT(objVert, store, left, 0);
+				ObjPrim_SetVertexUVT(objVert, store + 1, left + 4, countVertex);	
+				store += 2;
+			}
+			return objVert;
+		}
+		
+		function UpdateVertexUVT(obj, radius, textureMod)
+		{
+			ascent(i in 0..countVertex)
+			{
+				let indexVert = i * 2;
+				ObjPrim_SetVertexUVT(objBG, indexVert, 0, (142 + 16*i) + texMod);
+				ObjPrim_SetVertexUVT(objBG, indexVert + 1, 32, ((142 + 16) + 16*i) + texMod);
+			}
+		}
+		
+		function DrawVertex(obj, radA, radB)
+		{
+			let angle = 0;
+			let loc_indexVert = 0;
+			let randStrength = 8.5;
+			let first_rand = [rand(-randStrength, randStrength), rand(-randStrength, randStrength)];
+			
+			loop((countVertex / 2) + 2)
+			{
+				let vx1 = radA * cos(angle);
+				let vy1 = radA * sin(angle);
+				ObjPrim_SetVertexPosition(obj, loc_indexVert, vx1 + rand(-randStrength, randStrength), vy1 + rand(-randStrength, randStrength), 0);
+				ObjPrim_SetVertexAlpha(obj, loc_indexVert, 256);
+				
+				let vx2 = radB * cos(angle);
+				let vy2 = radB * sin(angle);
+				ObjPrim_SetVertexPosition(obj, loc_indexVert + 1, vx2 + rand(-randStrength, randStrength), vy2 + rand(-randStrength, randStrength), 0);
+				ObjPrim_SetVertexAlpha(obj, loc_indexVert + 1, 256);
+				
+				if(loc_indexVert == 0)
+				{
+					ObjPrim_SetVertexPosition(obj, loc_indexVert, vx1 + first_rand[0], vy1 + first_rand[1], 0);
+					ObjPrim_SetVertexAlpha(obj, loc_indexVert, 256);
+					
+					ObjPrim_SetVertexPosition(obj, loc_indexVert + 1, vx2, vy2, 0);
+					ObjPrim_SetVertexAlpha(obj, loc_indexVert + 1, 256);
+				}
+				else if(loc_indexVert == countVertex)
+				{
+					ObjPrim_SetVertexPosition(obj, loc_indexVert, vx1 + first_rand[0], vy1 + first_rand[1], 0);
+					ObjPrim_SetVertexAlpha(obj, loc_indexVert, 256);
+					
+					ObjPrim_SetVertexPosition(obj, loc_indexVert + 1, vx2, vy2, 0);
+					ObjPrim_SetVertexAlpha(obj, loc_indexVert + 1, 256);
+				}
+				
+				angle += (360/(countVertex/2));
+				loc_indexVert += 2;
+			}
+		}
+	}
+}
+
+
+task PowerCheck(didGet, op_deleteType)
+{
+	if(playerPower >= 0 && playerPower < 100 && powerState != 0)
+	{
+		powerState = 0;
+		opPos_current = opPos_Array[powerState];
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[1]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		optionArray = [GetPlayerObjectID, 0, 0, 0, 0];
+	}
+	else if(playerPower >= 100 && playerPower < 200 && powerState != 1)
+	{
+		powerState = 1;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[2]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		optionArray = [GetPlayerObjectID, optionOne, 0, 0, 0];
+	}
+	else if(playerPower >= 200 && playerPower < 300 && powerState != 2)
+	{
+		powerState = 2;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[3]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, 0, 0];
+	}
+	else if(playerPower >= 300 && playerPower < 400 && powerState != 3)
+	{
+		powerState = 3;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		alternative(op_deleteType)
+		case(0)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(1)
+		{
+			OptionDeathEffect(optionArray[4]);
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		case(2)
+		{
+			ascent(i in 1..length(optionArray))
+			{
+				if(optionArray[i] != 0)
+				{
+					OptionDeathEffect(optionArray[i]);
+					OptionFinishFlags(optionArray[i]);
+				}
+			}
+		}
+		OptionResetFlags(optionOne);
+		OptionResetFlags(optionTwo);
+		OptionResetFlags(optionThree);
+		optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, 0];
+	}
+	else if(playerPower >= 400 && powerState != 4)
+	{
+		powerState = 4;
+		opPos_current = opPos_Array[powerState];
+		if(didGet == 1)
+		{
+			PlaySE(se_powerup1);
+		}
+		
+		if(didGet != -1)
+		{
+			alternative(op_deleteType)
+			case(0)
+			{
+				ascent(i in 1..length(optionArray))
+				{
+					if(optionArray[i] != 0)
+					{
+						OptionFinishFlags(optionArray[i]);
+					}
+				}
+			}
+			case(2)
+			{
+				ascent(i in 1..length(optionArray))
+				{
+					if(optionArray[i] != 0)
+					{
+						OptionDeathEffect(optionArray[i]);
+						OptionFinishFlags(optionArray[i]);
+					}
+				}
+			}
+			OptionResetFlags(optionOne);
+			OptionResetFlags(optionTwo);
+			OptionResetFlags(optionThree);
+			OptionResetFlags(optionFour);
+			optionArray = [GetPlayerObjectID, optionOne, optionTwo, optionThree, optionFour];
+		}
+	}
+}
+
+task CreateAyaPlayerShot(x, y, speed, angle, dmg, pene)
+{
+	if(!IsPermitPlayerShot)
+	{
+		return;
+	}
+	
+	function ShotFade
+	{
+		let frame = 0;
+		
+		let alpha = 255;
+		let angmod = 0;
+		let scaleX = 1;
+		let scaleY = 1;
+		let inx = loc_x + -31*cos(angle);
+		let iny = loc_y + -31*sin(angle);
+		
+		let fadeEff = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(fadeEff, img_pl00_shot);
+		ObjSprite2D_SetSourceRect(fadeEff, 37, 65, 59, 127);
+		ObjSprite2D_SetDestRect(fadeEff, -11, -62, 11, 0);
+		ObjRender_SetBlendType(fadeEff, BLEND_ADD_ARGB);
+		ObjRender_SetPosition(fadeEff, inx, iny, 1);
+		ObjRender_SetAngleZ(fadeEff, angle + 90);
+		Obj_SetRenderPriorityI(fadeEff, 47);
+		
+		while(frame < 16)
+		{
+			scaleX = InterpolateValue(1, 0, frame, IP_LINEAR, 16);
+			scaleY = InterpolateValue(1, 2, frame, IP_LINEAR, 16);
+			alpha = InterpolateValue(1, 0, frame, IP_LINEAR, 16);
+			ObjRender_SetScaleXYZ(fadeEff, scaleX, scaleY, 1);
+			ObjRender_SetAlpha(fadeEff, 150);
+			frame++;
+			yield;
+		}
+		Obj_Delete(fadeEff);
+	}
+	
+	let loc_x;
+	let loc_y;
+	
+	if(x > -16 || x < 400)
+	{
+		let obj = CreatePlayerShotA1(x, y, speed, angle, dmg, 1, 4);
+		ObjRender_SetBlendType(obj, BLEND_ADD_ARGB);
+		Obj_SetRenderPriorityI(obj, 47);
+		
+		while(!Obj_IsDeleted(obj))
+		{
+			loc_x = ObjMove_GetX(obj);
+			loc_y = ObjMove_GetY(obj);
+			yield;
+		}
+		if(loc_y >= 0)
+		{
+			ShotFade;
+		}
+	}
+}
+
+task CreateRedPlayerShot(x, y, speed, angle, dmg, pene)
+{
+	if(!IsPermitPlayerShot)
+	{
+		return;
+	}
+	
+	function ShotFade
+	{
+		let frame = 0;
+		
+		let alpha = 255;
+		let angmod = 0;
+		let scaleX = 1;
+		let scaleY = 1;
+		let inx = loc_x + -31*cos(angle);
+		let iny = loc_y + -31*sin(angle);
+		
+		let fadeEff = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(fadeEff, img_pl00_shot);
+		ObjSprite2D_SetSourceRect(fadeEff, 69, 65, 91, 127);
+		ObjSprite2D_SetDestRect(fadeEff, -11, -62, 11, 0);
+		ObjRender_SetBlendType(fadeEff, BLEND_ADD_ARGB);
+		ObjRender_SetPosition(fadeEff, inx, iny, 1);
+		ObjRender_SetAngleZ(fadeEff, angle + 90);
+		Obj_SetRenderPriorityI(fadeEff, 47);
+		
+		while(frame < 16)
+		{
+			scaleX = InterpolateValue(1, 0, frame, IP_LINEAR, 16);
+			scaleY = InterpolateValue(1, 2, frame, IP_LINEAR, 16);
+			alpha = InterpolateValue(1, 0, frame, IP_LINEAR, 16);
+			ObjRender_SetScaleXYZ(fadeEff, scaleX, scaleY, 1);
+			ObjRender_SetAlpha(fadeEff, 150);
+			frame++;
+			yield;
+		}
+		Obj_Delete(fadeEff);
+	}
+	
+	let loc_x;
+	let loc_y;
+	
+	if(x > -16 || x < 400)
+	{
+		let obj = CreatePlayerShotA1(x, y, speed, angle, dmg, 1, 5);
+		ObjRender_SetBlendType(obj, BLEND_ADD_ARGB);
+		Obj_SetRenderPriorityI(obj, 47);
+		
+		while(!Obj_IsDeleted(obj))
+		{
+			loc_x = ObjMove_GetX(obj);
+			loc_y = ObjMove_GetY(obj);
+			yield;
+		}
+		if(loc_y >= 0)
+		{
+			ShotFade;
+		}
+	}
+}

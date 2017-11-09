@@ -1,0 +1,192 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Nemuri Neko"]
+#Text["Copying some of the mechanics of one of Tenkai's cards from RMI Ex"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+
+let nv = 100; //Circle resolution\
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let orangeCircle;
+let blueCircle;
+let blueR = 75;
+let orangeR = 150;
+let bx;
+let by;
+let px;
+let py;
+let newShotQueue = [];
+let count = 1;
+let i = 270;
+//let circleZ = 0;
+
+@Event{
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(2000);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX, 192, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+    orangeCircle = makeOverlayCircle(ObjMove_GetX(objBoss),ObjMove_GetY(objBoss),0, orangeR, 242, 129, 0, 128);
+    blueCircle = makeOverlayCircle(GetPlayerX(), GetPlayerY(), 0, blueR, 10,0,250,128);
+}
+
+@MainLoop{
+  count++;
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+  moveOverlayCircle(orangeCircle,ObjMove_GetX(objBoss),ObjMove_GetY(objBoss),0,orangeR);
+  moveOverlayCircle(blueCircle, GetPlayerX(), GetPlayerY(), 0, blueR);
+  bx = ObjMove_GetX(objBoss);
+  by = ObjMove_GetY(objBoss);
+  px = GetPlayerX();
+  py = GetPlayerY();
+  if(count%10 == 0 && count>120){
+    copyOnCircleEdge(CreateShotA1(bx,by, 3, 270-6*i, DS_KNIFE_KOUMA_WHITE,0));
+    i--;
+  }
+  while(length(newShotQueue) > 0){
+    copyOnCircleEdge(newShotQueue[0]);
+    newShotQueue = erase(newShotQueue,0);
+  }
+  
+  yield;
+}
+
+task copyOnCircleEdge(shot) {
+  wait(5);
+  let canHitO = true;
+  let canHitB = true;
+  let xpos = ObjMove_GetX(shot);
+  let ypos = ObjMove_GetY(shot);
+  let inB;
+  let inO;
+  let bdx = xpos - px;
+  let bdy = ypos - py;
+  inB = (bdx*bdx + bdy*bdy < blueR*blueR);
+      
+  let odx = xpos - bx;
+  let ody = ypos - by;
+  inO = (odx*odx + ody*ody < orangeR*orangeR);
+
+  yield;
+  while(!(Obj_IsDeleted(shot)) && (canHitO || canHitB)){
+    xpos = ObjMove_GetX(shot);
+    ypos = ObjMove_GetY(shot);
+    if(canHitO){
+      odx = xpos - bx;
+      ody = ypos - by;
+      if(inO != (odx*odx + ody*ody < orangeR*orangeR)){
+	let angleO = atan2(ody,odx); //I know it's backwards shut up doing weird things works
+	let newxO = px + blueR*cos(angleO);
+	let newyO = py + blueR*sin(angleO);
+	let newvO = ObjMove_GetSpeed(shot);
+	let newtO = ObjMove_GetAngle(shot);
+	let gO = ObjShot_GetImageID(shot);
+	let newShotO = CreateShotA1(newxO,newyO,newvO,180+newtO,gO,0);
+	Obj_Delete(shot);
+	//newShotQueue = newShotQueue ~ [newShotO];
+	
+	
+	
+	//do stuff for collision
+	canHitO = false;
+      }
+    }
+    if(canHitB){
+      bdx = xpos - px;
+      bdy = ypos - py;
+      if(inB != (bdx*bdx + bdy*bdy < blueR*blueR)){
+	let angleB = atan2(bdy,bdx);
+	let newxB = px + orangeR*cos(angleB);
+	let newyB = py + orangeR*sin(angleB);
+	let newvB = ObjMove_GetSpeed(shot);
+	let newtB = ObjMove_GetAngle(shot);
+	let gB = ObjShot_GetImageID(shot);
+	//let newShotB = CreateShotA1(newxB,newyB,newvB,180+newtB,gB,0);
+	//newShotQueue = newShotQueue ~ [newShotB];
+	
+
+	
+	//do stuff for collision
+	canHitB = false;
+      }
+    }
+
+    yield;
+  }
+}
+  
+      
+      
+
+
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+
+function makeOverlayCircle(xpos,ypos,zpos,radius, R,G,B,T) {
+  let oc = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+  ObjPrim_SetPrimitiveType(oc, PRIMITIVE_TRIANGLEFAN);
+  ObjPrim_SetVertexCount(oc,nv);
+  ObjPrim_SetVertexPosition(oc,0,xpos,ypos,zpos);
+  ObjPrim_SetVertexColor(oc,0,R,G,B);
+  ObjPrim_SetVertexAlpha(oc,0,T);
+  ascent(i in 1..nv-1){
+    ObjPrim_SetVertexPosition(oc,i,xpos+radius*cos((i-1)*360/(nv-1)),ypos+radius*sin((i-1)*360/(nv-1)),zpos);
+    ObjPrim_SetVertexColor(oc,i,R,G,B);
+    ObjPrim_SetVertexAlpha(oc,i,T);
+  }
+  ObjPrim_SetVertexPosition(oc,nv-1,xpos+radius,ypos,zpos);
+    ObjPrim_SetVertexColor(oc,nv-1,R,G,B);
+    ObjPrim_SetVertexAlpha(oc,nv-1,T);
+  return oc;
+}
+  
+task moveOverlayCircle(obj, xpos, ypos, zpos, radius){
+  ObjPrim_SetVertexPosition(obj,0, xpos, ypos, zpos);
+  ascent(i in 1..nv){
+    ObjPrim_SetVertexPosition(obj,i,xpos+radius*cos((i-1)*360/(nv-1)),ypos+radius*sin((i-1)*360/(nv-1)),zpos);
+  }ObjPrim_SetVertexPosition(obj,nv-1,xpos+radius,ypos,zpos);
+  
+}
+  
+
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

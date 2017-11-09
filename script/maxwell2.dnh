@@ -1,0 +1,141 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Sinister Spirits ~ \"Maxwell's Daemon2\""]
+#include "resource/Shot/ZUNShot_Const.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = 0;
+let timer = 60;
+let hots = [];
+let colds = [];
+@Event{
+  alternative(GetEventType())
+ case(EV_REQUEST_LIFE){
+    SetScriptResult(500);
+  }
+ case(EV_REQUEST_TIMER){
+   SetScriptResult(timer);
+ }
+ case(EV_REQUEST_SPELL_SCORE){
+   SetScriptResult(1000000);
+ }
+ case(EV_REQUEST_IS_DURABLE_SPELL){
+   SetScriptResult(true);
+ }
+}
+
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    //ObjMove_SetDestAtFrame(objBoss, GetCenterX, 100, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    //  TDrawLoop;
+    TFinalize;
+    //fire;
+}
+
+@MainLoop{
+  if(count==0){
+     CreateStraightLaserA1(-20,GetStgFrameHeight()/2,0,GetStgFrameWidth(),20,0,ST_LASER_GRAY,timer*60);
+  }
+  if(count%45==0 && count<timer*45){fire;}
+  count++;
+  bounceH;
+  bounceC;
+  yield;
+}
+
+task fire{
+  let close = true;
+  let x;
+  let y;
+  let plx = GetPlayerX();
+  let ply = GetPlayerY();
+  while(close){
+    x = rand(10, GetStgFrameWidth() - 10);
+    y = rand(10, GetStgFrameHeight() - 10);
+    close = ((plx - x)^2 + (ply-y)^2)^(1/2) < 20;
+    
+  }
+  let r = floor(rand(0,2.3));
+  if(r == 0){
+    hots = hots ~ [CreateShotA1(x,y,2,rand(0,359),SMALL_RED,10)];
+    ObjShot_SetSpellResist(hots[length(hots)-1],true);
+  }
+  else{
+    colds = colds ~ [CreateShotA1(x,y,1,rand(0,359),SMALL_AQUA,10)];
+    ObjShot_SetSpellResist(colds[length(colds)-1],true);
+  }
+}
+
+
+ task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+
+task bounceH{
+  ascent(i in 0..length(hots)){
+    let id = hots[i];
+    let px = ObjMove_GetX(id);
+    let py = ObjMove_GetY(id);
+    let pt = ObjMove_GetAngle(id);
+    let ph = GetPlayerY() > GetStgFrameHeight()/2;
+    if(px < 5 && cos(pt) < 0){
+      ObjMove_SetAngle(id,180-pt);
+    }
+    if(px > GetStgFrameWidth()-5 && cos(pt) > 0){
+      ObjMove_SetAngle(id,180-pt);
+    }
+    if(py < 5 && sin(pt) < 0){
+      ObjMove_SetAngle(id,-pt);
+    }
+    if(py > GetStgFrameHeight()-5 && sin(pt) > 0){
+      ObjMove_SetAngle(id,-pt);
+    }
+    if(py <= GetStgFrameHeight()/2 && py + 3*sin(pt) >= GetStgFrameHeight()/2 && !ph){
+      ObjMove_SetY(id, GetStgFrameHeight() - py);
+      ObjMove_SetAngle(id,-pt);
+    }if(py >= GetStgFrameHeight()/2 && py + 3*sin(pt) <= GetStgFrameHeight()/2 && ph){
+      ObjMove_SetY(id, GetStgFrameHeight() - py);
+      ObjMove_SetAngle(id,-pt);
+    }
+  }
+}  
+
+task bounceC{
+  ascent(i in 0..length(colds)){
+    let id = colds[i];
+    let px = ObjMove_GetX(id);
+    let py = ObjMove_GetY(id);
+    let pt = ObjMove_GetAngle(id);
+    let ph = GetPlayerY() > GetStgFrameHeight()/2;
+    if(px < 5 && cos(pt) < 0){
+      ObjMove_SetAngle(id,180-pt);
+    }
+    if(px > GetStgFrameWidth()-5 && cos(pt) > 0){
+      ObjMove_SetAngle(id,180-pt);
+    }
+    if(py < 5 && sin(pt) < 0){
+      ObjMove_SetAngle(id,-pt);
+    }
+    if(py > GetStgFrameHeight()-5 && sin(pt) > 0){
+      ObjMove_SetAngle(id,-pt);
+    }
+    if(py <= GetStgFrameHeight()/2 && py + 2*sin(pt) >= GetStgFrameHeight()/2 && ph){
+      ObjMove_SetY(id, GetStgFrameHeight() - py);
+      ObjMove_SetAngle(id,-pt);
+    }if(py >= GetStgFrameHeight()/2 && py + 2*sin(pt) <= GetStgFrameHeight()/2 && !ph){
+      ObjMove_SetY(id, GetStgFrameHeight() - py);
+      ObjMove_SetAngle(id,-pt);
+    }
+  }
+}  

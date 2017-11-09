@@ -1,0 +1,130 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Hubble Expansion"]
+#Text["Edited from Tutorial Code by Sparen"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+//#include "resource/Shot/ZUNShot_Const.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let angleAdj = 90;
+let posX = [];
+let posY = [];
+let bases = [];
+let nstars = 50;
+
+@Event {
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(50000);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+
+@Initialize {
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 100, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+    fireBaseStars;
+}
+@MainLoop {
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+    if(count %30 == 0){
+      fireExpansionStars();
+      count++;
+    }
+    count++;
+    yield;
+}
+
+
+task fireBaseStars {
+  wait(90);
+  ascent(i in 0..nstars){
+    posX = posX ~ [rand(0,GetStgFrameWidth())];
+    posY = posY ~ [rand(0,GetStgFrameHeight())];
+    bases = bases ~ [CreateShotA1(posX[i], posY[i], 0, 0, DS_STAR_S_PURPLE, 10)];
+  }
+  yield;
+}
+
+task fireExpansionStars {
+  let j = floor(rand(0,nstars));
+  let sj = bases[j];
+  let newShot = [];
+  ObjMove_AddPatternB3(sj, 0, 0, 0, 0, 0, 0, 0, DS_STAR_M_BLUE);
+  wait(10);
+  ascent(i in 0..nstars){
+    if(i != j){
+      ObjMove_AddPatternB3(bases[i], 0,0,0,0,0,0,0, DS_STAR_S_PURPLE);
+      newShot = newShot ~ [CreateShotA1(posX[i],posY[i],0, 180+atan2(ObjMove_GetY(sj) - posY[i], ObjMove_GetX(sj) - posX[i]), DS_STAR_S_RED, 0)];
+      
+      yield;
+    }
+  }
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0 && length(newShot) > 0){
+    let deletionQueue = [];
+    ascent(i in 0..length(newShot)){
+      if(Obj_IsDeleted(newShot[i])){
+	deletionQueue = deletionQueue ~ [i];
+      }else{
+	ObjMove_SetSpeed(newShot[i], max(1,0.01*GetObjectDistance(newShot[i],sj)));
+	//ObjMove_AddPatternA3(newShot[i],0,2,1,1,1,1, DS_STAR_S_GREEN);
+      }
+    }
+    if(length(deletionQueue) > 0){
+      ascent(k in 0..length(deletionQueue)){
+	erase(newShot, deletionQueue[k]);
+      }
+    }
+    yield;
+  }
+  return;
+}
+	    
+	      
+  
+
+task movement {
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+      // ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX()+90,GetCenterX()-90), rand(GetCenterY()-60,GetCenterY()-120), 60);
+        wait(240);
+    }
+} 
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

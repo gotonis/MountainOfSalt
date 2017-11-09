@@ -1,0 +1,151 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Mockery ~ \"Liar's Execution\""]
+#Text["stuff"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let sparkActive = 0;
+let angleDif = 30;
+let laserdx = 0;
+let laserdy = 0;
+let laseroffset = 0;
+let lasergx = 0;
+let lasergy = 0;
+
+@Event{
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(2000);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX, 120, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+}
+@MainLoop{
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+    //if(count == 0){movement;}
+    if(count%20 == 0){
+      fireCenter;
+    }
+    if(count%400 == 100){
+    }
+    // fire;
+    count++;
+    yield;
+}
+task fireCenter{
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}//Default kill to prevent (0,0) spawning
+    let angleT = GetAngleToPlayer(objBoss);
+    ascent(i in 0..12){
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angleT - 24 + 4*i, DS_RICE_S_R_RED, 20);
+    }
+}
+
+task fireSpark{
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}//Default kill to prevent (0,0) spawning
+    let angleP = GetAngleToPlayer(objBoss);
+    let bx = ObjMove_GetX(objBoss);
+    let by = ObjMove_GetY(objBoss);
+    let px = GetPlayerX();
+    let py = GetPlayerY();
+    laserdx = px - bx;
+    laserdy = py - by;
+    laseroffset = px*by - bx*py;
+    lasergx = -0.05*cos(angleP - 90);
+    lasergy = -0.05*sin(angleP - 90);
+    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleP, 512, 300, 200, DS_BEAM_RAINBOW,60);
+    wait(60);
+    sparkActive = 1;
+    wait(200);
+    sparkActive = 0;
+}
+    
+task fireStar(angle){
+  let color = floor(rand(0,7));
+  let obj = -1;
+  alternative(color)
+ case(0){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_RED, 20);
+  }case(1){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_ORANGE, 20);
+  }case(2){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_YELLOW, 20);
+  }case(3){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_GREEN, 20);
+  }case(4){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_SKY, 20);
+  }case(5){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_BLUE, 20);
+  }others{
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_PURPLE, 20);
+  }
+  
+  while(!Obj_IsDeleted(obj)){
+    if(count%400 > 150){
+      let vx = ObjMove_GetSpeed(obj)*cos(ObjMove_GetAngle(obj));
+      let vy = ObjMove_GetSpeed(obj)*sin(ObjMove_GetAngle(obj));
+      if(laserdy*ObjMove_GetX(obj) - laserdx*ObjMove_GetY(obj) + laseroffset > 0){
+	ObjMove_AddPatternB1(obj, 0, vx+lasergx,vy+lasergy);
+	yield;
+      }
+      else if(laserdx*ObjMove_GetX(obj) - laserdy*ObjMove_GetY(obj) +  laseroffset < 0){
+        ObjMove_AddPatternB1(obj, 0, vx-lasergx, vy-lasergy);
+	yield;
+      }
+    }
+    yield;
+  }
+  
+  
+}
+  
+  
+
+task movement{
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+        ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX+90,GetCenterX-90), rand(GetCenterY-60,GetCenterY-120), 60);
+        wait(400);
+    }
+}
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

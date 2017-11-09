@@ -1,0 +1,256 @@
+#TouhouDanmakufu[Single]
+#Version[3]
+#Title["satori non 1"]
+
+#include "script/default_system/Default_ShotConst.txt"
+
+@Event {
+	alternative(GetEventType())
+	case(EV_REQUEST_LIFE){
+		SetScriptResult(1900);
+	}
+	case(EV_REQUEST_TIMER){
+		SetScriptResult(43);
+	}
+}
+
+let objBoss;
+
+/**
+* Difficulty setting.
+*
+* 0: Easy
+* 1: Normal
+* 2: Hard
+* 3: Lunatic
+*/
+let nDifficulty = 1;
+
+@Initialize {
+	objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+	ObjEnemy_Regist(objBoss);
+	Boss1();
+}
+
+@MainLoop {
+	yield;
+}
+
+task Boss1 {
+	ObjMove_SetX(objBoss, 192);
+	ObjMove_SetY(objBoss, 128);
+
+	loop {
+		Boss1_at1();
+		Boss1_at2();
+		Wait(240);
+		Boss1_at1b();
+		Boss1_at2b();
+		Wait(240);
+	}
+}
+
+task Boss1_at1 {
+	let nX = ObjMove_GetX(objBoss);
+	let nY = ObjMove_GetY(objBoss);
+	let nShotCount = SetValueENHL(1, 1, 3, 3);
+
+	let nCount = SetValueENHL(30, 120, 120, 120);
+	let nShotAngle1 = -90;
+	let nShotAngle2 = -90;
+	let nRadius = 0;
+	let nAngle1 = 90;
+	let nAngle2 = 90;
+
+
+	while(nCount > 0){
+		let shot0 = CircleShotA1(nX + nRadius * cos(nAngle1), nY + nRadius * sin(nAngle1), false, nShotCount, 1, 1.6, 1.0, nShotAngle1, 0, DS_RICE_S_RED);
+		Shot_SetFireDecelerate(shot0);
+
+		let shot1 = CircleShotA1(nX + nRadius * cos(nAngle2), nY + nRadius * sin(nAngle2), false, nShotCount, 1, 1.6, 1.0, nShotAngle2, 0, DS_RICE_S_BLUE);
+		Shot_SetFireDecelerate(shot1);
+
+		if(nDifficulty != 0){
+			yield;
+			nShotAngle1 += 1.941754;
+			nShotAngle2 -= 1.941754;
+			nAngle1 -= 22.5;
+			nAngle2 += 22.5;
+		}
+		else {
+			Wait(4);
+			nShotAngle1 += 7.767016;
+			nShotAngle2 -= 7.767016;
+			nAngle1 -= 90;
+			nAngle2 += 90;
+		}
+		nRadius += 1.0;
+		nCount--;
+	}
+}
+
+task Boss1_at1b {
+	let nX = ObjMove_GetX(objBoss);
+	let nY = ObjMove_GetY(objBoss);
+	let nShotCount = SetValueENHL(1, 1, 1, 3);
+
+	let nCount = SetValueENHL(30, 120, 120, 120);
+	let nShotAngle1 = 90;
+	let nShotAngle2 = 90;
+	let nRadius = 50;
+	let nAngle1 = -90;
+	let nAngle2 = -90;
+
+	while(nCount != 0){
+		let shot0 = CircleShotA1(nX + nRadius * cos(nAngle1), nY + nRadius * sin(nAngle1), false, nShotCount, 1, 1.6, 1.0, nShotAngle1, 0, DS_RICE_S_RED);
+		Shot_SetFireDecelerate(shot0);
+
+		let shot1 = CircleShotA1(nX + nRadius * cos(nAngle2), nY + nRadius * sin(nAngle2), false, nShotCount, 1, 1.6, 1.0, nShotAngle2, 0, DS_RICE_S_BLUE);
+		Shot_SetFireDecelerate(shot1);
+
+		if(nDifficulty != 0){
+			yield;
+			nShotAngle1 += 1.941754;
+			nShotAngle2 -= 1.941754;
+			nAngle1 -= 22.5;
+			nAngle2 += 22.5;
+		}
+		else {
+			Wait(4);
+			nShotAngle1 += 7.767016;
+			nShotAngle2 -= 7.767016;
+			nAngle1 -= 90;
+			nAngle2 += 90;
+		}
+		nRadius -= 0.5;
+		nCount--;
+	}
+}
+
+task Boss1_at2 {
+	let nX = ObjMove_GetX(objBoss);
+	let nY = ObjMove_GetY(objBoss);
+	let nShotCount = SetValueENHL(1, 1, 1, 3);
+
+	let nCount = 120;
+	let nShotAngle1 = -90;
+	let nShotAngle2 = -90;
+	let nRadius = 0;
+	let nAngle1 = 90;
+	let nAngle2 = 90;
+
+	while(nCount > 0){
+		if(nCount % 13 == 1){
+			let shot0 = CircleShotA1(nX, nY, false, nShotCount, 1, 1.6, 1.0, nShotAngle1, 0, DS_BALL_L_RED);
+			Shot_SetFireDecelerate(shot0);
+
+			let shot1 = CircleShotA1(nX, nY, false, nShotCount, 1, 1.6, 1.0, nShotAngle2, 0, DS_BALL_L_BLUE);
+			Shot_SetFireDecelerate(shot1);
+		}
+		yield;
+		nShotAngle1 += 1.941754;
+		nShotAngle2 -= 1.941754;
+		nAngle1 -= 22.5;
+		nAngle2 += 22.5;
+		nRadius += 1.0;
+		nCount--;
+	}
+}
+
+task Boss1_at2b {
+	let nX = ObjMove_GetX(objBoss);
+	let nY = ObjMove_GetY(objBoss);
+	let nShotCount = SetValueENHL(1, 1, 1, 3);
+
+	let nCount = 120;
+	let nShotAngle1 = 90;
+	let nShotAngle2 = 90;
+	let nRadius = 50;
+	let nAngle1 = -90;
+	let nAngle2 = -90;
+
+	while(nCount > 0){
+		if(nCount % 13 == 1){
+			let shot0 = CircleShotA1(nX, nY, false, nShotCount, 1, 1.6, 1.0, nShotAngle1, 0, DS_BALL_L_RED);
+			Shot_SetFireDecelerate(shot0);
+
+			let shot1 = CircleShotA1(nX, nY, false, nShotCount, 1, 1.6, 1.0, nShotAngle2, 0, DS_BALL_L_BLUE);
+			Shot_SetFireDecelerate(shot1);
+		}
+		yield;
+		nShotAngle1 += 1.941754;
+		nShotAngle2 -= 1.941754;
+		nAngle1 -= 22.5;
+		nAngle2 += 22.5;
+		nRadius -= 0.5;
+		nCount--;
+	}
+}
+
+
+function Wait(nFrames){
+	loop(nFrames){ yield; }
+}
+
+function SetValueENHL(nValueE, nValueN, nValueH, nValueL){
+	alternative(nDifficulty)
+	case(0){ return nValueE; }
+	case(1){ return nValueN; }
+	case(2){ return nValueH; }
+	case(3){ return nValueL; }
+
+	RaiseError("Invalid difficulty value!");
+}
+
+/**
+* Fires a ring of bullets.
+*
+* @param nX 			Spawn X
+* @param nY 			Spawn Y
+* @param bAimed			Whether the ring is aimed at the player
+* @param nCount 		Number of bullets per layer
+* @param nLayer 		Number of layers
+* @param nSpeed 		Base speed
+* @param nMinSpeed 		Minimum layer speed
+* @param nAngle 		Base angle
+* @param nLayerAngle 	Angle offfset per layer
+* @param nGraphic 		Shot graphic
+*/
+function CircleShotA1(nX, nY, bAimed, nCount, nLayer, nSpeed, nMinSpeed, nAngle, nLayerAngle, nGraphic){
+	let a_nObj = [];
+
+	/* Angle gap between bullets */
+	let nAngleGap = 360 / nCount;
+	/* Angle offset, used to center the spread */
+	let nOffset = (nAngleGap * nCount) / 2 - nAngleGap / 2;
+	/* Speed reduction between layers */
+	let nLayerSpeed = (nSpeed - nMinSpeed) / nLayer;
+
+	if(bAimed){
+		nAngle += atan2(GetPlayerY() - nY, GetPlayerX() - nX);
+	}
+
+	ascent(i in 0..nCount){
+		let nSpeed2 = nSpeed;
+		let nAngle2 = nAngle + nAngleGap * i;
+
+		ascent(j in 0..nLayer){
+			let objShot = CreateShotA1(nX, nY, nSpeed2, nAngle2, nGraphic, 8);
+			//CreateShotDelayGraphic(nX, nY, nSpeed2, nAngle2, nGraphic);
+			nSpeed2 -= nLayerSpeed;
+			nAngle2 += nLayerAngle;
+			a_nObj = a_nObj ~ [objShot];
+		}
+	}
+	//PlaySEObject(objSE_Shot1, 208, 0);
+	return a_nObj;
+}
+
+// also copied from my MoF boss practice library
+task Shot_SetFireDecelerate(a_nObj){
+	ascent(i in 0..length(a_nObj)){
+		let nSpeed = ObjMove_GetSpeed(a_nObj[i]);
+		let nDecRate = (nSpeed * 8 - nSpeed) / 8;
+		ObjMove_AddPatternA2(a_nObj[i], 0, nSpeed * 8, NO_CHANGE, -nDecRate, 0, nSpeed);
+	}
+}

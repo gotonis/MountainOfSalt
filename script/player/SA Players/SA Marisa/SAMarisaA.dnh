@@ -1,0 +1,216 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Marisa
+	by Frenticpony
+	
+	SAMarisaA.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+#TouhouDanmakufu[Player]
+#ScriptVersion[3]
+#ID["SAMarisaA"]
+#Title["SA Marisa A"]
+#Image["./img/slpl00a.png"]
+#ReplayName["SAMarisaA"]
+
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	
+	Raw (damage * 1)
+		Power 0 DPS: ~640
+		Power 1 DPS: ~674
+		Power 2 DPS: ~737
+		Power 3 DPS: ~846
+		Power 4 DPS: ~955
+		Power 5 DPS: ~1100
+		Power 6 DPS: ~1252 (very close)
+		Power 7 DPS: ~1400 (very close)
+		Power 8 DPS: ~1250 (very close)
+	
+	Balance (damage * 0.23)
+		Power 0 DPS: ~148
+		Power 1 DPS: ~155
+		Power 2 DPS: ~170
+		Power 3 DPS: ~194
+		Power 4 DPS: ~219
+		Power 5 DPS: ~253
+		Power 6 DPS: ~287 (very close)
+		Power 7 DPS: ~321 (very close)
+		Power 8 DPS: ~287 (very close)
+	
+	This is a recreation of Marisa's first shot-type from Subterranian Animism.
+	
+	Below, there are several customization options to tweak the script to
+	suit a variety of needs.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+/* --------------------------------------------
+	Bomb effect render priority.
+	If you can't see the effect or it is
+	interferring with something, change this.
+	
+	default          = 61;
+	default_particle = 33;
+-------------------------------------------- */
+let bg_renderPriority = 61;
+let bg_renderPriority_particle = 33;
+
+/* --------------------------------------------
+	Locks the player at maximum power level
+	for scripts without item drops.
+	Note: Automatically sets boolean
+	"useAlternateBombType" to true.
+	
+	default = false;
+-------------------------------------------- */
+let alwaysFullPower = true;
+
+/* --------------------------------------------
+	Infinite lives.  Total shootdown count can 
+	be optionally tracked with GetCommonData("FP_MissCount", 0);
+	
+	default = false;
+-------------------------------------------- */
+let infiniteLives = false;
+
+/* --------------------------------------------
+	Infinite bombs.  Total bomb use count can 
+	be optionally tracked with GetCommonData("FP_BombUseCount", 0);
+	Note: Only functional if boolean "useAlternateBombType" is true.
+	
+	default = false;
+-------------------------------------------- */
+let infiniteBombs = false;
+
+/* --------------------------------------------
+	Shot Damage Multiplier.  Increase/decrease if 
+	the player is too weak/too powerful.
+	
+	default = 0.23;
+-------------------------------------------- */
+let player_DamageMultiplier = 0.23;
+
+/* --------------------------------------------
+	Bomb damage and Bomb Damage Multiplier.
+	
+	default      = 32;
+	defaultMulti = 1;
+-------------------------------------------- */
+let player_BombDamage = 32;
+let player_BombDamageMultiplier = 1;
+
+/* --------------------------------------------
+	Starting power level.
+	
+	default = 0;
+-------------------------------------------- */
+let playerPower = 0;
+
+/* --------------------------------------------
+	Starting life count
+	
+	default = 2;
+-------------------------------------------- */
+let playerLives = 2;
+
+/* --------------------------------------------
+	Use alternate bomb type?
+	(Bombs for bombs, instead of -100 power)
+	
+	default = false;
+-------------------------------------------- */
+let useAlternateBombType = false;
+
+/* --------------------------------------------
+	Starting bomb count
+	(Alternate bomb type only)
+	
+	default = 3;
+-------------------------------------------- */
+let playerBombs = 3;
+
+/* --------------------------------------------
+	Number of bombs to give on respawn
+	(Alternate bomb type only)
+	
+	default = 3;
+-------------------------------------------- */
+let playerRebirthBombs = 3;
+
+/* --------------------------------------------
+	Take away bombs on respawn?
+	(Alternate bomb type only)
+	
+	default = false;
+-------------------------------------------- */
+let playerRebirthResetBombs = false;
+
+/* --------------------------------------------
+	Power loss on death.
+	First is normal MoF style
+	Second is for alternate bomb type
+	
+	default    = 320;
+	defaultAlt = 100;
+-------------------------------------------- */
+let playerPowerLoss = 320;
+let playerPowerLossAlternate = 100;
+
+/* --------------------------------------------
+	Drop power items on death?
+	
+	default = true;
+-------------------------------------------- */
+let playerDropItems = true;
+
+/* --------------------------------------------
+	Small Power Item Value
+	
+	default = 8;
+-------------------------------------------- */
+let player_sPowerValue = 8;
+
+/* --------------------------------------------
+	Large Power Item Value
+	
+	default = 100;
+-------------------------------------------- */
+let player_lPowerValue = 100;
+
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	End customization section
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+#include"./lib/image_lib.dnh"
+#include"./lib/sound_lib.dnh"
+#include"./lib/player_lib.dnh"
+#include"./lib/playerA_lib.dnh"
+
+player_type = 0;
+
+@Initialize
+{
+	LoadPlayerShotData(GetCurrentScriptDirectory() ~ "lib/player_shot.dnh");
+	_Initialize();
+}
+
+@Loading
+{
+	_Loading();
+}
+
+@MainLoop
+{
+	_MainLoop();
+	MainLoopExcl();
+	yield;
+}
+
+@Finalize
+{
+	_Finalize();
+}
+
+@Event
+{
+	_Event();
+}

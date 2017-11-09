@@ -1,0 +1,48 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: SA Reimu
+	by Frenticpony
+	
+	image_lib.dnh v1.0
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+let img_ascii = GetCurrentScriptDirectory() ~ "../img/ascii.png";
+let img_pl00_shot = GetCurrentScriptDirectory() ~ "../img/pl00_shot.png";
+let img_pl00 = GetCurrentScriptDirectory() ~ "../img/pl00.png";
+let img_pl00b = GetCurrentScriptDirectory() ~ "../img/pl00b.png";
+let img_pl00c = GetCurrentScriptDirectory() ~ "../img/pl00c.png";
+let img_pl00d = GetCurrentScriptDirectory() ~ "../img/pl00d.png";
+let img_pl00e = GetCurrentScriptDirectory() ~ "../img/pl00e.png";
+let img_pl00f = GetCurrentScriptDirectory() ~ "../img/pl00f.png";
+let img_hitbox = GetCurrentScriptDirectory() ~ "../img/hitboximg.png";
+let img_eff01 = GetCurrentScriptDirectory() ~ "../img/eff01.png";
+let img_effect_base = GetCurrentScriptDirectory() ~ "../img/eff_base.png";
+
+function LoadPlayerTextures()
+{
+	//LoadTexture(img_ascii);
+	LoadTexture(img_pl00_shot);
+	LoadTexture(img_pl00);
+	LoadTexture(img_pl00b);
+	LoadTexture(img_pl00c);
+	LoadTexture(img_pl00d);
+	LoadTexture(img_pl00e);
+	LoadTexture(img_pl00f);
+	LoadTexture(img_hitbox);
+	LoadTexture(img_eff01);
+	LoadTexture(img_effect_base);
+}
+
+function RemovePlayerTextures()
+{
+	//RemoveTexture(img_ascii);
+	RemoveTexture(img_pl00_shot);
+	RemoveTexture(img_pl00);
+	RemoveTexture(img_pl00b);
+	RemoveTexture(img_pl00c);
+	RemoveTexture(img_pl00d);
+	RemoveTexture(img_pl00e);
+	RemoveTexture(img_pl00f);
+	RemoveTexture(img_hitbox);
+	RemoveTexture(img_eff01);
+	RemoveTexture(img_effect_base);
+}

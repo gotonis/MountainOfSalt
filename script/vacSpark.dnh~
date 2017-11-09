@@ -1,0 +1,116 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Air Sign ~ \"Vacuum Spark\""]
+#Text["Vacuum Spark"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let sparkActive = 0;
+let angleDif = 15;
+let laserdx = 0;
+let laserdy = 0;
+let laseroffset = 0;
+
+@Event{
+    alternative(GetEventType())
+    case(EV_REQUEST_LIFE){
+        SetScriptResult(500);
+    }
+    case(EV_REQUEST_TIMER){
+        SetScriptResult(60);
+    }
+    case(EV_REQUEST_SPELL_SCORE){
+        SetScriptResult(1000000);
+    }
+}
+@Initialize{
+    objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+    ObjEnemy_Regist(objBoss);
+    ObjMove_SetDestAtFrame(objBoss, GetCenterX, 60, 60);
+    ObjEnemyBossScene_StartSpell(objScene);
+    TDrawLoop;
+    TFinalize;
+}
+@MainLoop{
+    ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+    ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+    if(count == 0){movement;}
+    if(count%20 == 0){
+      fireStars;
+    }
+    // fire;
+    count++;
+    yield;
+}
+task fireStars{
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}//Default kill to prevent (0,0) spawning
+    let angleT = rand(0,360);
+    ascent(i in 0..20){
+      fireStar(angleT + angleDif*i);
+    }
+}
+
+task fireStar(angle){
+  let color = rand(0,6);
+  let obj = -1;
+  alternative(color)
+ case(0){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_RED, 20);
+  }case(1){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_ORANGE, 20);
+  }case(2){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_YELLOW, 20);
+  }case(3){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_GREEN, 20);
+  }case(4){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_SKY, 20);
+  }case(5){
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_BLUE, 20);
+  }others{
+    obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle, DS_STAR_M_PURPLE, 20);
+  }
+  
+  // while(!Obj_IsDeleted(obj)){
+  //if(sparkActive == 1){
+  //}  
+  
+
+}
+  
+  
+
+task movement{
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+        ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX+90,GetCenterX-90), rand(GetCenterY-60,GetCenterY-120), 60);
+        wait(240);
+    }
+}
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

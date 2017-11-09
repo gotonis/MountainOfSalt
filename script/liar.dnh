@@ -1,0 +1,125 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Mockery ~ \"Liar's Execution\""]
+#Text["stuff"]
+//#BGM["./necrofantasia.ogg"]
+#include "script/default_system/Default_ShotConst.txt"
+let objBoss;
+let objScene=GetEnemyBossSceneObjectID();
+let count = -120;
+let sparkActive = 0;
+let angleDif = 30;
+let theta = 0;
+let angleL = 0;
+
+@Event{
+  alternative(GetEventType())
+ case(EV_REQUEST_LIFE){
+    SetScriptResult(2000);
+  }
+ case(EV_REQUEST_TIMER){
+   SetScriptResult(60);
+ }
+ case(EV_REQUEST_SPELL_SCORE){
+   SetScriptResult(1000000);
+ }
+}
+
+
+
+@Initialize{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 160, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+  TDrawLoop;
+  TFinalize;
+}
+
+
+
+@MainLoop{
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32); 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+  //if(count == 0){movement;}
+  if(count%20 == 0){
+    fireCenter;
+  }
+  if(count%4 == 0){
+    fireSide(GetCenterX() - 60, 155);
+    fireSide(GetCenterX() + 60, 155);
+  }
+  if(count%400 == 100){
+    fireLaser(GetAngleToPlayer(objBoss));
+  }
+  // fire;
+  count++;
+  yield;
+}
+
+
+task fireCenter{
+    if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}//Default kill to prevent (0,0) spawning
+    let angleT = GetAngleToPlayer(objBoss);
+    ascent(i in 0..12){
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, angleT - 24 + 4*i, DS_RICE_S_R_RED, 20);
+    }
+}
+
+task fireSide(x,y){
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0){return;}
+  let angleT = atan2(GetPlayerY() - y, GetPlayerX() - x);
+  //let k = (((GetPlayerY() - y)^2 + (GetPlayerX() - x)^2)/281360)^0.5;
+  
+  ascent(i in 0..6){
+    CreateShotA1(x,y,4,angleT + 3*cos(theta) + 40*i - 100, DS_RICE_S_BLUE, 10);
+    theta += 4;
+  }
+}
+
+task fireLaser(angle){
+  angleL = angle -60;
+  let laser = CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angleL, 500, 6, 120, DS_BEAM_BLUE, 1);
+  yield;
+  while(!Obj_IsDeleted(laser)){
+    angleL++;
+    ObjStLaser_SetAngle(laser, angleL);
+    yield;
+  }
+}
+	
+  
+
+task movement{
+    while(ObjEnemy_GetInfo(objBoss,INFO_LIFE) > 0){
+        ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX+90,GetCenterX-90), rand(GetCenterY-60,GetCenterY-120), 60);
+        wait(400);
+    }
+}
+task TDrawLoop {
+    let imgExRumia = GetCurrentScriptDirectory() ~ "ExRumia.png";
+    ObjPrim_SetTexture(objBoss, imgExRumia);
+    ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);
+    ObjSprite2D_SetDestCenter(objBoss);
+}
+task TFinalize {
+    while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){yield;}
+    if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT)
+            +ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0){
+        AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+    }
+    Obj_Delete(objBoss);
+    DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE);
+    SetAutoDeleteObject(true);
+    CloseScript(GetOwnScriptID());
+    return;
+}
+function GetCenterX(){
+    return GetStgFrameWidth() / 2;
+}
+function GetCenterY(){
+    return GetStgFrameHeight() / 2;
+}
+function wait(n){
+    loop(n){yield;}
+}

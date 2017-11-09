@@ -1,0 +1,57 @@
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	Player Recreation Project: MoF Reimu
+	by Frenticpony
+	
+	player_shot.dnh v2.5
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+#PlayerShotData
+shot_image = "./../img/pl00_shot.png"
+
+//Default Shot
+ShotData
+{
+	id = 1
+	rect = (0, 0, 16, 64)
+	render = ALPHA
+	alpha = 150
+	collision = 16
+}
+
+//Reimu B Homing Orb
+ShotData
+{
+	id = 2
+	rect = (2, 98, 31, 127)
+	render = ALPHA
+	alpha = 250
+}
+
+//Reimu A Needle
+ShotData
+{
+	id = 3
+	rect = (64, 0, 72, 64)
+	render = ALPHA
+	alpha = 125
+}
+
+//Reimu C Normal Shot
+ShotData
+{
+	id = 4
+	rect = (37, 65, 59, 127)
+	render = ALPHA
+	alpha = 255
+	collision = 4
+}
+
+//Reimu C Red Shot
+ShotData
+{
+	id = 5
+	rect = (69, 65, 91, 127)
+	render = ALPHA
+	alpha = 255
+	collision = 4
+}
